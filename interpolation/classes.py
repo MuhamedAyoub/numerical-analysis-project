@@ -86,3 +86,29 @@ class Polynomial:
         return sum([self._coefficients[i] * (x ** i) for i in range(len(self._coefficients))])
 
 
+class ConsoleFormatter:
+    BOLD = "\033[1m"
+    GREEN = "\033[32m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
+
+    @staticmethod
+    def bold(text):
+        return f"{ConsoleFormatter.BOLD}{text}{ConsoleFormatter.END}"
+
+    @staticmethod
+    def underline(text):
+        return f"{ConsoleFormatter.UNDERLINE}{text}{ConsoleFormatter.END}"
+
+    @staticmethod
+    def push(text):
+        return f"                   {text}"
+
+    @staticmethod
+    def header(text):
+        return f"""
+{ConsoleFormatter.push(ConsoleFormatter.bold(ConsoleFormatter.underline(f'{text}')))}
+"""
+    @staticmethod
+    def green(text):
+        return f"{ConsoleFormatter.GREEN}{text}{ConsoleFormatter.END}"
