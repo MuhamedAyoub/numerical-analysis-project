@@ -1,4 +1,4 @@
-https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/# analyse-mini-project
+# description
 a mini project for the analyse numérique subject
 
 # setup
