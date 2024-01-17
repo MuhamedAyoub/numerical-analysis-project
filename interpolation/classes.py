@@ -170,7 +170,3 @@ class ConsoleFormatter:
         # bottom line
         print(f"└{'┴'.join(['─' * m for i in range(len(visual[0]))])}┘")
 
-ConsoleFormatter.table([
-    [1, 2, 3],
-    [4, 5, 6]
-], ['h(x)', 'f(x)', 'g(x)'], ['x = 1', 'x = 2'])
