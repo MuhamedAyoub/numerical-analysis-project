@@ -86,3 +86,87 @@ class Polynomial:
         return sum([self._coefficients[i] * (x ** i) for i in range(len(self._coefficients))])
 
 
+class ConsoleFormatter:
+    """
+    a class containing helper functions for console formatting
+    """
+
+    BOLD = "\033[1m"
+    GREEN = "\033[32m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
+
+    @staticmethod
+    def bold(text):
+        return f"{ConsoleFormatter.BOLD}{text}{ConsoleFormatter.END}"
+
+    @staticmethod
+    def underline(text):
+        return f"{ConsoleFormatter.UNDERLINE}{text}{ConsoleFormatter.END}"
+
+    @staticmethod
+    def push(text):
+        return f"                   {text}"
+
+    @staticmethod
+    def header(text):
+        return f"""
+{ConsoleFormatter.push(ConsoleFormatter.bold(ConsoleFormatter.underline(f'{text}')))}
+"""
+    @staticmethod
+    def green(text):
+        return f"{ConsoleFormatter.GREEN}{text}{ConsoleFormatter.END}"
+
+    @staticmethod
+    def _justify(text, desired_len):
+        spaces_before = int((desired_len - len(text)) / 2)
+        spaces_after = int(desired_len - len(text) - spaces_before)
+        return " " * spaces_before + text + " " * spaces_after
+
+    @staticmethod
+    def table(t, header: list[str] = [], side: list[str] = []):
+        if t == []:
+            return
+        m = 0
+        m = max([m, *[len(name) for name in header]])
+        m = max([m, *[len(name) for name in side]])
+        visual = []
+        if len(header) > 0:
+            if len(side) > 0:
+                visual = [['' ,*header]]
+            else:
+                visual = [header]
+
+        ncol = len(t[0])
+        for row in range(len(t)):
+            if len(side) > 0:
+                visual.append([side[row]])
+                m = max(m, len(side[row]))
+            else:
+                visual.append([])
+
+            for col in range(len(t[row])):
+                if ncol != len(t[row]):
+                    raise ValueError('not a table.')
+                val_str = str(t[row][col])
+                m = max(m, len(val_str))
+                visual[len(visual) - 1].append(val_str)
+        
+        # longest value has at least two spaces surrounding it
+        m += 2
+
+        # top line
+        print(f"┌{'┬'.join(['─' * m for i in range(len(visual[0]))])}┐")
+        
+        if len(header) > 0:
+            print(f"│{'│'.join([ConsoleFormatter.bold(ConsoleFormatter._justify(val, m)) for val in visual[0]])}│")
+            print(f"├{'┼'.join(['─' * m for i in range(len(visual[0]))])}┤")
+
+        # header separator
+
+        for row in range(1 if len(header) > 0 else 0, len(visual)):
+            print(f"│{'│'.join([ConsoleFormatter._justify(val, m) for val in visual[row]])}│")
+
+        # bottom line
+        print(f"└{'┴'.join(['─' * m for i in range(len(visual[0]))])}┘")
+
