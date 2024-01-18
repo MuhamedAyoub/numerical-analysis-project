@@ -39,4 +39,6 @@ def devided_diff(points):
     print(f"{ConsoleFormatter.green(ConsoleFormatter.bold('P(X)'))} = {p}")
     print(ConsoleFormatter.header("Executed in:"))
     print(f"{time_end - time_start}s")
-    return p
+    return [p, time_end - time_start]
+
+devided_diff([(0, 1), (1, 2), (2, 4)])
