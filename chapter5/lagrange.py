@@ -1,7 +1,9 @@
-from classes import ConsoleFormatter, Polynomial
+from helpers import Polynomial, ConsoleFormatter
 import time
 
 def lagrange(points):
+    print(ConsoleFormatter.section("Lagrange Method:"))
+
     time_start = time.time()
     lagrange_polynomials = [
         points[points_counter][1] * Polynomial.mul(*[
@@ -16,6 +18,7 @@ def lagrange(points):
         print(f"l{i}(X) = {lagrange_polynomials[i]}")
     p = Polynomial.sum(*lagrange_polynomials)
     time_end = time.time()
+
     print(ConsoleFormatter.header("Result:"))
     print(f"{ConsoleFormatter.green(ConsoleFormatter.bold('P(X)'))} = {p}")
     print(ConsoleFormatter.header("Executed in:"))

@@ -1,7 +1,8 @@
 from time import time
-from classes import ConsoleFormatter, Polynomial
+from helpers import ConsoleFormatter, Polynomial, sort_points
 
 def calc_coeff(points):
+    points = sort_points(points)
     table = list(map(list, points))
     coefficients = [points[0][1]]
     for col in range(2, len(points) + 1):
@@ -15,15 +16,17 @@ def calc_coeff(points):
             table[row].append(value)
     print(ConsoleFormatter.header("Newton Algorithm:"))
     ConsoleFormatter.table(table)
+    print(ConsoleFormatter.header("Coefficients:"))
+    for i in range(len(coefficients)):
+        print(f"""{ConsoleFormatter.bold(f'f[{", ".join([f"x{j}" for j in range(i + 1)])}]')} = {coefficients[i]}""")
     return coefficients
 
 
 def devided_diff(points):
+    print(ConsoleFormatter.section("Devided Differences Method:"))
+
     time_start = time()
     coefficients = calc_coeff(points)
-    print(ConsoleFormatter.header("Coefficients:"))
-    for i in range(len(coefficients)):
-        print(f"""{ConsoleFormatter.bold(f'f[{", ".join([f"x{j}" for j in range(i + 1)])}]')} = {coefficients[i]}""")
     p = Polynomial.sum(*[
         coefficients[i] * Polynomial.mul(*[1, *[
             Polynomial(-points[j][0], 1) for j in range(i)
@@ -31,6 +34,7 @@ def devided_diff(points):
         for i in range(len(points))
     ])
     time_end = time()
+
     print(ConsoleFormatter.header("Result:"))
     print(f"{ConsoleFormatter.green(ConsoleFormatter.bold('P(X)'))} = {p}")
     print(ConsoleFormatter.header("Executed in:"))

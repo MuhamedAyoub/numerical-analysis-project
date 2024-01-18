@@ -93,6 +93,7 @@ class ConsoleFormatter:
 
     BOLD = "\033[1m"
     GREEN = "\033[32m"
+    LIGHTBLUE = "\033[38:5:33m"
     UNDERLINE = "\033[4m"
     END = "\033[0m"
 
@@ -109,13 +110,25 @@ class ConsoleFormatter:
         return f"                   {text}"
 
     @staticmethod
-    def header(text):
+    def header(value):
         return f"""
-{ConsoleFormatter.push(ConsoleFormatter.bold(ConsoleFormatter.underline(f'{text}')))}
+{ConsoleFormatter.push(ConsoleFormatter.bold(ConsoleFormatter.underline(f'{value}')))}
 """
+
+    @staticmethod
+    def section(title):
+        return ConsoleFormatter.lightblue(f"""
+
+    {ConsoleFormatter.push(ConsoleFormatter.bold(ConsoleFormatter.underline(f'{title}')))}
+
+""")
     @staticmethod
     def green(text):
         return f"{ConsoleFormatter.GREEN}{text}{ConsoleFormatter.END}"
+
+    @staticmethod
+    def lightblue(text):
+        return f"{ConsoleFormatter.LIGHTBLUE}{text}{ConsoleFormatter.END}"
 
     @staticmethod
     def _justify(text, desired_len):
@@ -169,4 +182,9 @@ class ConsoleFormatter:
 
         # bottom line
         print(f"└{'┴'.join(['─' * m for i in range(len(visual[0]))])}┘")
+
+
+"""                     Helper Functions                    """
+def sort_points(points):
+    return sorted(points, key=lambda point: point[0])
 
