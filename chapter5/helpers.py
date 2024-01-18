@@ -183,8 +183,3 @@ class ConsoleFormatter:
         # bottom line
         print(f"└{'┴'.join(['─' * m for i in range(len(visual[0]))])}┘")
 
-
-"""                     Helper Functions                    """
-def sort_points(points):
-    return sorted(points, key=lambda point: point[0])
-

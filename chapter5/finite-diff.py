@@ -1,9 +1,9 @@
-from helpers import ConsoleFormatter, Polynomial, sort_points
+from helpers import ConsoleFormatter, Polynomial
 from math import factorial
 from time import time
 
 def calc_coefficients(points):
-    points = sort_points(points)
+    points = sorted(points, key=lambda point: point[0])
     if not equidistant(points):
         raise ValueError("points are not equidistant")
 

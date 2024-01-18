@@ -1,8 +1,9 @@
 from time import time
-from helpers import ConsoleFormatter, Polynomial, sort_points
+from helpers import ConsoleFormatter, Polynomial
 
 def calc_coeff(points):
-    points = sort_points(points)
+    points = sorted(points, key=lambda point: point[0])
+
     table = list(map(list, points))
     coefficients = [points[0][1]]
     for col in range(2, len(points) + 1):
