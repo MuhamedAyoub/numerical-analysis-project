@@ -37,8 +37,3 @@ luDecomposition <- function(mat) {
     cat(paste(upper[i, ], collapse = "\t"), "\n")
   }
 }
-
-# Driver code
-mat <- matrix(c(2, -1, -2, -4, 6, 3, -4, -2, 8), 3, 3, byrow = TRUE)
-
-luDecomposition(mat)
