@@ -27,6 +27,7 @@ iterative_power <- function(m, vect, precision, decimals = 3) {
   eigenvectors <- matrix(vect, ncol = 1, nrow = length(vect))
 
   iterations <- 0
+  eigenvalue <- 0
   repeat {
     x <- c(m %*% vect)
     if (iterations > 0) {
@@ -64,9 +65,10 @@ deflation <- function(m, init, precision, decimals = 3) {
   eigenvectors <- matrix(rep(1, nrow(m)), nrow = nrow(m))
   eigenvalues <- c(NULL)
 
-  while (iterations <= nrow(m)) {
-    sprintf("---------------------------iteration %g------------------------------",
-            iterations)
+  while (!is_diagonal(m)) {
+    print(
+          sprintf("---------------------------iteration %g------------------------------", # nolint: line_length_linter.
+                  iterations))
     print(list("A" = m))
     result <- iterative_power(m, init, precision, decimals)
     v <- result$eigenvector
