@@ -63,7 +63,7 @@ simpson <- function(...) {
   return((h / 6) * sum)
 }
 
-calculate <- function(...) {
+integerate <- function(...) {
   result <- list("trapezoids" = trapezoids(...), "simpson" = simpson(...))
   return(result)
 }
