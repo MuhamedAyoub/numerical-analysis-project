@@ -38,7 +38,6 @@ simpson <- function(points) {
     stop("expected at least 3 points")
   }
   points <- ord(points)
-  a <- points[1, 1]
   h <- abs(points[1, 1] - points[1, 3])
   r <- as.integer(abs(points[1, 1] - points[1, length(points[1, ])]) / h)
 
@@ -81,10 +80,10 @@ simple_simpson <- function(points) {
 integrate <- function(f, a, b, r, mode) {
   result <- switch(
     mode,
-    "simple simpson" = simple_simpson(
+    "simple_simpson" = simple_simpson(
       generate(f, a, b, 1, "simpson")
     ),
-    "simple trapezoids" = simple_trapezoids(
+    "simple_trapezoids" = simple_trapezoids(
       generate(f, a, b, 1)
     ),
     "trapezoids" = trapezoids(

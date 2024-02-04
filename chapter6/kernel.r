@@ -19,7 +19,7 @@ kernel <- function(mode, sig = 1, width = 4) {
       function(i) {
         return(integrate(
           function(x) return(gaussian(x, sig)),
-          a, a + i * h, 3, mode
+          a + (i - 1) * h, a + i * h, 3, mode
         ))
       }
     )
@@ -29,5 +29,11 @@ kernel <- function(mode, sig = 1, width = 4) {
   return((1 / sum(result)) * result)
 }
 
-library(magick)
-
+args <- commandArgs(trailingOnly = TRUE)
+paste(
+  collapse = ";",
+  kernel(
+    args[1],
+    if (length(args) > 1) as.integer(args[2])
+  )
+)
