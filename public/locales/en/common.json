@@ -1,0 +1,9 @@
+{
+	"chapters": {
+		"1": {
+			"id": 1,
+			"title": "Chapter 1",
+			"desc": "This is the first chapter of the book"
+		}
+	}
+}
