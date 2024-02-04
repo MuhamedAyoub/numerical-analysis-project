@@ -11,7 +11,7 @@ kernel <- function(mode, sig = 1, width = 4) {
   size <- 5 * 5
   a <- -(abs(width / 2))
   h <- width / size
-  return(matrix(
+  result <- matrix(
     ncol = 5,
     nrow = 5,
     sapply(
@@ -23,7 +23,8 @@ kernel <- function(mode, sig = 1, width = 4) {
         ))
       }
     )
-  ))
-}
+  )
 
-print(kernel("trapezoids"))
+  # normalization
+  return((1 / sum(result)) * result)
+}

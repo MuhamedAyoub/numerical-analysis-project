@@ -11,7 +11,6 @@ generate <- function(f, a, b, intervals, mode = "trapazoid") {
 }
 
 trapezoids <- function(points) {
-  print(points)
   if (length(points[1, ]) < 2) {
     stop("expected at least 2 points")
   }
@@ -25,9 +24,6 @@ trapezoids <- function(points) {
 
   # sum += 2 * sum(f(a + i * h))
   for (i in seq_len(r - 1)) {
-    if (a + i * h != points[1, i + 1]) {
-      stop("step is not of equal size for all points")
-    }
     sum <- sum + 2 * points[2, i + 1]
   }
 
@@ -52,13 +48,6 @@ simpson <- function(points) {
   # i selects a pair of (f(a + (i - 0.5 * h)), f(a + i * h))
   # this includes f(b)
   for (i in seq_len(r)) {
-    if ((a + (i - (1 / 2)) * h) != points[1, 2 * i]) {
-      stop(sprintf("point %g violiates specified step", 2 * i))
-    }
-    if ((a + i * h != points[1, 2 * i + 1])) {
-      stop(sprintf("point %g violiates specified step", 2 * i + 1))
-    }
-
     sum <- sum + 4 * points[2, 2 * i] + 2 * points[2, 2 * i + 1]
   }
 
