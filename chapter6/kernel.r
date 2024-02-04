@@ -28,3 +28,6 @@ kernel <- function(mode, sig = 1, width = 4) {
   # normalization
   return((1 / sum(result)) * result)
 }
+
+library(magick)
+
