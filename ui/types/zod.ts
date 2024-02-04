@@ -4,3 +4,5 @@ export const MatrixSchema = z.object({
 	columns: z.number(),
 	data: z.array(z.array(z.number())),
 });
+
+export type TMatrix = z.infer<typeof MatrixSchema>;
