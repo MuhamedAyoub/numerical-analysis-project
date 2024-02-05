@@ -15,7 +15,7 @@ export default function MatrixForm() {
 		defaultValues: {
 			rows: 2,
 			columns: 2,
-			data: [
+			coefficient: [
 				[0, 0],
 				[0, 0],
 			],
@@ -39,7 +39,7 @@ export default function MatrixForm() {
 						name="rows"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Question announcement: </FormLabel>
+								<FormLabel>Rows: </FormLabel>
 								<FormControl>
 									<Input {...field} type="number" min={2} max={10} />
 								</FormControl>
@@ -52,7 +52,7 @@ export default function MatrixForm() {
 						name="rows"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Question announcement: </FormLabel>
+								<FormLabel>Cols: </FormLabel>
 								<FormControl>
 									<Input {...field} type="number" min={2} max={10} />
 								</FormControl>
@@ -61,28 +61,46 @@ export default function MatrixForm() {
 						)}
 					/>
 				</div>
-				<div className="flex flex-col gap-1">
-					{matrix.map((row, i) => (
-						<div className="flex gap-1" key={i}>
-							{row.map((col, j) => (
-								<FormField
-									key={j}
-									control={form.control}
-									name={`data.${i}.${j}`}
-									render={({ field }) => (
-										<FormItem key={j}>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							))}
-						</div>
-					))}
+				<div className="flex gap-4">
+					<div className="flex flex-col gap-1">
+						{matrix.map((row, i) => (
+							<div className="flex gap-1" key={i}>
+								{row.map((col, j) => (
+									<FormField
+										key={j}
+										control={form.control}
+										name={`coefficient.${i}.${j}`}
+										render={({ field }) => (
+											<FormItem key={j}>
+												<FormControl>
+													<Input {...field} /> * X<sub>{j + 1}</sub>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								))}
+							</div>
+						))}
+					</div>
+					<div>
+						{Array.from({ length: currentRow }, (_, i) => (
+							<FormField
+								key={i}
+								control={form.control}
+								name={`values.${i}`}
+								render={({ field }) => (
+									<FormItem key={i}>
+										<FormControl>
+											= <Input {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						))}
+					</div>
 				</div>
-				{}
 			</form>
 		</Form>
 	);
