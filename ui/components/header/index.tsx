@@ -1,5 +1,9 @@
 import { CNavigationMenu } from './navbar';
 
 export default function Header() {
-	return <CNavigationMenu />;
+	return (
+		<header className="flex justify-center items-center">
+			<CNavigationMenu />
+		</header>
+	);
 }
