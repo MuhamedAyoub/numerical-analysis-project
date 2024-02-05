@@ -34,6 +34,6 @@ paste(
   collapse = ";",
   kernel(
     args[1],
-    if (length(args) > 1) as.integer(args[2])
+    if (length(args) > 1) as.numeric(args[2])
   )
 )
