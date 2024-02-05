@@ -4,6 +4,10 @@
 ## Note
 the code to blur the image is provided in `blur-snippet.py`
 
+## Blurring Process
+first the image is loaded as a matrix where each item represents a pixel, afterwards the kernel is applied 
+on each pixel.
+
 ## Explanation
 The given program blurs an image using gaussian blur technique.
 For every pixel of the original image a new pixel is generated using the surrounding pixel values in a 
