@@ -20,8 +20,9 @@ export const H1: React.FC<Props> = ({ text, className, ...props }) => {
 export const H2: React.FC<Props> = ({ text, className, ...props }) => {
 	return (
 		<h2
+			{...props}
 			className={cn(
-				'scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0',
+				'scroll-m-20  pb-2 text-3xl font-semibold tracking-tight first:mt-0',
 				className
 			)}>
 			{text}
@@ -32,6 +33,7 @@ export const H2: React.FC<Props> = ({ text, className, ...props }) => {
 export const H3: React.FC<Props> = ({ text, className, ...props }) => {
 	return (
 		<h3
+			{...props}
 			className={cn(
 				'scroll-m-20 text-2xl font-semibold tracking-tight',
 				className
@@ -44,6 +46,7 @@ export const H3: React.FC<Props> = ({ text, className, ...props }) => {
 export const H4: React.FC<Props> = ({ text, className, ...props }) => {
 	return (
 		<h4
+			{...props}
 			className={cn(
 				'scroll-m-20 text-xl font-semibold tracking-tight',
 				className
@@ -55,7 +58,9 @@ export const H4: React.FC<Props> = ({ text, className, ...props }) => {
 
 export const P: React.FC<Props> = ({ text, className, ...props }) => {
 	return (
-		<p className={cn('leading-7 [&:not(:first-child)]:mt-6', className)}>
+		<p
+			{...props}
+			className={cn('leading-7 [&:not(:first-child)]:mt-6', className)}>
 			{text}
 		</p>
 	);
