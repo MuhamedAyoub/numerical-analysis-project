@@ -1,9 +1,5 @@
-points <- function(...) {
-  points <- vector(mode = "list", length = ...length())
-  for (i in seq_len(...length())) {
-    points[[i]] <- ...elt(i)
-  }
-  points <- points[order(sapply(points, `[`, 1))]
+ord <- function(points) {
+  return(points[, order(points[1, ])])
 }
 
 mul <- function(p, q) {
@@ -75,30 +71,41 @@ multiply <- function(...) {
   return(result)
 }
 
-lagrange <- function(...) {
-  print("                                   Lagrange Method")
-  p <- points(...)
+lagrange <- function(points) {
+  print("                              Lagrange Method")
+  points <- ord(points)
   result <- c(NULL)
-  for (i in seq_len(length(p))) {
+  time <- 0
+  for (i in seq_len(length(points[1, ]))) {
+    stime <- Sys.time()
     weight <- c(1)
-    for (j in seq_len(length(p))) {
+    for (j in seq_len(length(points[1, ]))) {
       if (j != i) {
-        weight <- mul(weight, (1 / (p[[i]][1] - p[[j]][1])) * c(- p[[j]][1], 1))
+        weight <- mul(
+          weight,
+          (1 / (points[1, i] - points[1, j])) * c(- points[1, j], 1)
+        )
       }
     }
+    time <- time + (Sys.time() - stime)
     print(sprintf("l%g(x) = %s", i, stringify(weight)))
-    result <- sum(result, weight * p[[i]][2])
+    stime <- Sys.time()
+    result <- sum(result, weight * points[2, i])
+    time <- time + (Sys.time() - stime)
   }
+  result <- list(result = result, time = time)
   return(result)
 }
 
-newton <- function(...) {
-  p <- points(...)
-  execution <- matrix(c(sapply(p, `[`, 2)), nrow = length(p))
+newton <- function(points) {
+  points <- ord(points)
+  execution <- matrix(c(points[2, ]), nrow = length(points[1, ]))
   header <- c("x", "f[x0]")
-  result <- p[[1]][2]
-  # first 2 column are already filled
-  for (i in seq(2, length(p))) {
+  result <- points[2, 1]
+  time <- 0
+
+  # first column are already filled
+  for (i in seq(2, length(points[1, ]))) {
     header <- c(
       header,
       sprintf(
@@ -113,11 +120,12 @@ newton <- function(...) {
       )
     )
 
+    stime <- Sys.time()
     # starts calculating at position [2, 2] before should be empty
     column <- rep(0, i - 1)
-    for (j in seq(i, length(p))) {
+    for (j in seq(i, length(points[1, ]))) {
       cell <- (execution[j, i - 1] - execution[j - 1, i - 1]) /
-        (p[[j]][1] - p[[j - (i - 1)]][1])
+        (points[1, j] - points[1, j - (i - 1)])
       if (j == i) {
         result <- c(result, cell)
       }
@@ -127,28 +135,151 @@ newton <- function(...) {
         cell
       )
     }
+    time <- time + (Sys.time() - stime)
     execution <- cbind(execution, column)
   }
 
-  print("                                Newton Algorithm")
-  execution <- cbind(sapply(p, `[`, 1), execution)
+  print("                               Newton Algorithm")
+  execution <- cbind(points[1, ], execution)
   execution <- rbind(header, execution)
   print(execution)
+
+  result <- list(result = result, time = time)
   return(result)
 }
 
-divided_diff <- function(...) {
+fdf <- function(points) {
+  points <- ord(points)
+  execution <- matrix(c(points[2, ]), nrow = length(points[1, ]))
+  header <- c("x", "f[x0]")
+  result <- points[2, 1]
+  time <- 0
+
+  # first 2 column are already filled
+  for (i in seq(2, length(points[1, ]))) {
+    header <- c(
+      header,
+      sprintf(
+        "f[%s]",
+        paste(
+          sapply(
+            seq(0, i - 1),
+            function(i) return(sprintf("x%g", i))
+          ),
+          collapse = ", "
+        )
+      )
+    )
+
+    stime <- Sys.time()
+    # starts calculating at position [2, 2] before should be empty
+    column <- rep(0, i - 1)
+    for (j in seq(i, length(points[1, ]))) {
+      cell <- execution[j, i - 1] - execution[j - 1, i - 1]
+      if (j == i) {
+        result <- c(result, cell)
+      }
+
+      column <- c(
+        column,
+        cell
+      )
+    }
+    time <- time + (Sys.time() - stime)
+    execution <- cbind(execution, column)
+  }
+
+  print("                               FDF Algorithm")
+  execution <- cbind(points[1, ], execution)
+  execution <- rbind(header, execution)
+  print(execution)
+
+  result <- list(result = result, time = time)
+  return(result)
 }
 
-finite_diff <- function(...) {
+divided_diff <- function(points) {
+  stime <- Sys.time()
+  points <- ord(points)
+  time <- Sys.time() - stime
+
+  result <- newton(points)
+  coefficients <- result$result
+  time <- time + result$time
+  poly <- c(1)
+  result <- c(0)
+
+  stime <- Sys.time()
+  for (coeff in seq_len(length(coefficients))) {
+    if (coeff > 1) {
+      poly <- mul(poly, c(-points[1, coeff - 1], 1))
+    }
+    result <- sum(result, coefficients[coeff] * poly)
+  }
+  time <- time + (Sys.time() - stime)
+
+  result <- list(result = result, time = time)
+  return(result)
 }
 
-interpolate <- function(...) {
+finite_diff <- function(points) {
+  stime <- Sys.time()
+  points <- ord(points)
+  a <- points[1, 1]
+  h <- abs(a - points[1, length(points[1, ])]) / (length(points[1, ]) - 1)
+  for (i in 2:length(points[1, ])) {
+    if (a + (i - 1) * h != points[1, i]) {
+      print("points are not equidistant")
+      return(list(result = NULL, time = 0))
+    }
+  }
+  time <- Sys.time() - stime
+
+  result <- fdf(points)
+  coefficients <- result$result
+  time <- time + result$time
+  poly <- c(1)
+  result <- c(0)
+
+  stime <- Sys.time()
+  for (coeff in seq_len(length(coefficients))) {
+    if (coeff > 1) {
+      poly <- mul(poly, c(-points[1, coeff - 1], 1))
+    }
+    result <- sum(
+      result,
+      (coefficients[coeff] / ((h ^ (coeff - 1)) * factorial(coeff - 1))) * poly
+    )
+  }
+  time <- time + (Sys.time() - stime)
+
+  result <- list(result = result, time = time)
+  return(result)
+}
+
+interpolate <- function(points) {
   result <- list(
-    "lagrange" = lagrange(...),
-    "divided_diff" = divided_diff(...),
-    "finite_diff" = finite_diff(...)
+    "lagrange" = lagrange(points),
+    "divided_diff" = divided_diff(points),
+    "finite_diff" = finite_diff(points)
   )
-  print(result)
-  return(result)
+
+  print("                               TIME")
+  print(sprintf("lagrange: %g", result$lagrange$time))
+  print(sprintf("divided differences: %g", result$divided_diff$time))
+  print(sprintf("finite differences: %g", result$finite_diff$time))
+
+  return(result$divided_diff$result)
 }
+
+# points should b x0,y0;x1,y1;...
+args <- commandArgs(trailingOnly = TRUE)
+
+points <- matrix(c(1, 1), nrow = 2)
+for (point in strsplit(args[1], ";")) {
+  points <- cbind(points, sapply(strsplit(point, ","), as.numeric))
+}
+
+points <- points[, 2:length(points[1, ])]
+
+print(paste(interpolate(points), collapse = ";"))
