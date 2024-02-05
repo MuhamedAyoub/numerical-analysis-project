@@ -7,7 +7,7 @@
 - run pip install -r requirements.txt
 - run the script using `python blur.py`
 
-follow (https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/)[freecodecamp article] if 
+follow [freecodecamp article](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/) if 
 you get stuck in the dependency installation process
 
 ### NOTE
