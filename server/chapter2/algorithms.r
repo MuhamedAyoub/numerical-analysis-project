@@ -142,3 +142,36 @@ choleskyDecompositionSolve <- function(A, B) {
   
   return(x)
 }
+
+
+choleskyDecompositionSolve <- function(A, B) {
+  n <- nrow(A)
+  
+  # Cholesky decomposition
+  L <- matrix(0, n, n)
+  
+  for (i in 1:n) {
+    for (j in 1:i) {
+      if (i == j) {
+        L[i, i] <- sqrt(A[i, i] - sum(L[i, 1:(i-1)]^2))
+      } else {
+        L[i, j] <- (A[i, j] - sum(L[i, 1:(i-1)] * L[j, 1:(j-1)])) / L[j, j]
+      }
+    }
+  }
+  
+  # Solving the system using Cholesky decomposition
+  # Ly = B (forward substitution)
+  y <- numeric(n)
+  for (i in 1:n) {
+    y[i] <- (B[i] - sum(L[i, 1:(i-1)] * y[1:(i-1)])) / L[i, i]
+  }
+  
+  # Lt x = y (back substitution)
+  x <- numeric(n)
+  for (i in n:1) {
+    x[i] <- (y[i] - sum(L[i+1:n, i] * x[i+1:n])) / L[i, i]
+  }
+  
+  return(x)
+}
