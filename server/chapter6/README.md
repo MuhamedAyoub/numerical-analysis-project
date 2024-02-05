@@ -1,17 +1,8 @@
-## Setup
-- install `python<version>`
-- install `pip`
-- install virtualenv using `pip install virtualenv`
-- create a virtual env using `python<version> venv -m [folder name]`
-- execute `[folder name]/bin/activate` script (use `source [folder name]/bin/activate` on Linux)
-- run pip install -r requirements.txt
-- run the script using `python blur.py`
+## Libraries
+`magick` used for reading, blurring, and saving images
 
-follow [freecodecamp article](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/) if 
-you get stuck in the dependency installation process
-
-### NOTE
-make sure you execute the script, after entering into the virtual environment
+## Note
+the code to blur the image is provided in `blur-snippet.py`
 
 ## Explanation
 The given program blurs an image using gaussian blur technique.
