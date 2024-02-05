@@ -53,6 +53,3 @@ blur <- function(image) {
   image_write(new_image, "./simple_simpson.jpg")
 }
 
-image <- image_read(
-  "./sample.jpg"
-)
