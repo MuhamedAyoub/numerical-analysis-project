@@ -1,6 +1,5 @@
 import InfoSection from '@/components/common/info';
 import { Icons } from '@/components/icons';
-import Image from 'next/image';
 
 const info: {
 	title: string;
