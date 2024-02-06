@@ -8,19 +8,35 @@ source(file_path_ch7)
 source(file_path_ch4)
 
 
+#' @filter cors
+cors <- function(req, res) {
+  
+  res$setHeader("Access-Control-Allow-Origin", "*")
+  
+  if (req$REQUEST_METHOD == "OPTIONS") {
+    res$setHeader("Access-Control-Allow-Methods","*")
+    res$setHeader("Access-Control-Allow-Headers", req$HTTP_ACCESS_CONTROL_REQUEST_HEADERS)
+    res$status <- 200 
+    return(list())
+  } else {
+    plumber::forward()
+  }
+  
+}
 #* @post /ch2
-#* @param method_name
-#* @param A
-#* @param b 
-function(method_name , A , b) {
-    if (method_name == "Gauss") {
-        list(status="success", x=gaussianEliminationPartialPivoting(A, b))
-    } else if (method_name == "LU") {
-        x= luDecompositionSolve(A,b)
-        list(status="success", x=x)
-    } else if (method_name == "Cholesky") {
-        x =  choleskyDecompositionSolve(A,b)
-        list(status="success", x=x)
+#* @param selected_method
+#* @param coefficient
+#* @param values
+function(selected_method , coefficient , values) {
+
+    coefficient = as.matrix(coefficient)
+    print(coefficient)
+    if (selected_method == "Gauss") {
+        gaussianEliminationPartialPivoting(A=coefficient, b=values)
+    } else if (selected_method == "LU") {
+         luDecompositionSolve(A=coefficient,B=values)
+    } else if (selected_method == "Cholesky") {
+        choleskyDecompositionSolve(A=coefficient,B=values)
     } else {
         list(status="error", msg="Method not found")
     }
