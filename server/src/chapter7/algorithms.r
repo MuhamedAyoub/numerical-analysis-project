@@ -86,32 +86,14 @@ rungeKutta2 <- function(f, x0, y0, h, N, alpha) {
   return(data.frame(x = x, y = y))
 }
 
-# Fourth-order Runge-Kutta method
-rungeKutta4 <- function(f, x0, y0, h, N) {
-  # f: function representing the derivative dy/dx
-  # x0, y0: initial values (x0, y0)
-  # h: step size
-  # N: maximum number of iterations
+
+
+RK4 <- function(t, y, h, f) {
+  # Runge-Kutta standard calculations
+  k1 <- f(t, y)
+  k2 <- f(t + h/2, y + h/2 * k1)
+  k3 <- f(t + h/2, y + h/2 * k2)
+  k4 <- f(t + h, y + h * k3)
   
-  # Initialize arrays to store results
-  x <- numeric(N + 1)
-  y <- numeric(N + 1)
-  
-  # Set initial values
-  x[1] <- x0
-  y[1] <- y0
-  
-  # Perform Runge-Kutta method of order 4
-  for (n in 1:N) {
-    k1 <- h * f(x[n], y[n])
-    k2 <- h * f(x[n] + h/2, y[n] + k1/2)
-    k3 <- h * f(x[n] + h/2, y[n] + k2/2)
-    k4 <- h * f(x[n] + h, y[n] + k3)
-    
-    y[n + 1] <- y[n] + (k1 + 2*k2 + 2*k3 + k4) / 6
-    x[n + 1] <- x[n] + h
-  }
-  
-  # Return the results
-  return(data.frame(x = x, y = y))
+  return(1/6 * (k1 + 2 * k2 + 2 * k3 + k4))
 }

@@ -70,3 +70,28 @@ givens_rotation <- function(A, max_iter = 1000, tol = 1e-6) {
 
   return(list(eigenvalues = diag(A), eigenvectors = G))
 }
+
+
+# controller 
+getCompressedImage <- function(img_matrix, method_name, num_eigenvalues = 50) {
+  if(method_name == "power_iteration") {
+    result <- power_iteration(A = img_matrix)
+    dominant_eigenvector <- result$v
+    projected_data <- img_matrix %*% dominant_eigenvector %*% t(dominant_eigenvector)  
+    return(list(status="success", compressed_image=projected_data))  
+  } else if(method_name == "deflation_method") {
+    result <- deflation_method(img_matrix, num_eigenvalues)
+    dominant_eigenvector <- result$eigenvectors
+    projected_data <- img_matrix %*% dominant_eigenvector %*% t(dominant_eigenvector)
+    return (list(status="success", compressed_image=projected_data ))
+  } else if(method_name == "givens_rotation") {
+    result <- givens_rotation(A = img_matrix)
+    dominant_eigenvector <- result$eigenvectors
+    # Project image matrix onto the dominant eigenvector
+    projected_data <- img_matrix %*% dominant_eigenvector %*% t(dominant_eigenvector)
+    return(list(status="success", compressed_image=projected_data))
+  } else {
+    return(list(status="error", msg="Method not found"))
+  }
+}
+

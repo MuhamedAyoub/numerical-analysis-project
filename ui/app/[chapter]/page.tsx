@@ -1,14 +1,15 @@
-import { GetStaticProps } from 'next';
-
+import SecondChapter from '@/components/chapters/second';
 type Props = {
-	chapter: string;
+	params: {
+		chapter: string;
+	};
 };
-export default function ChapterPage({ chapter }: Props) {
+export default function ChapterPage({ params: { chapter } }: Props) {
 	switch (chapter) {
 		case '1':
 			return <h1>Chapter 1</h1>;
 		case '2':
-			return <h1>Chapter 2</h1>;
+			return <SecondChapter />;
 		case '3':
 			return <h1>Chapter 3</h1>;
 		case '4':
@@ -23,4 +24,8 @@ export default function ChapterPage({ chapter }: Props) {
 		default:
 			return <h1>Chapter 1</h1>;
 	}
+}
+
+export function generateStaticParams() {
+	return ['1', '2', '3', '4', '5', '6', '7'];
 }
