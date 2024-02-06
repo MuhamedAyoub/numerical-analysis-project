@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { HTMLAttributes, ReactNode } from 'react';
 
 type Props = React.HTMLAttributes<HTMLHeadingElement> & {
 	text?: string;
@@ -55,13 +56,31 @@ export const H4: React.FC<Props> = ({ text, className, ...props }) => {
 		</h4>
 	);
 };
-
-export const P: React.FC<Props> = ({ text, className, ...props }) => {
+type TP = HTMLAttributes<HTMLHeadingElement> & {
+	asParent?: boolean;
+	text: ReactNode;
+};
+export const P: React.FC<TP> = ({
+	text,
+	asParent = false,
+	className,
+	...props
+}) => {
 	return (
-		<p
-			{...props}
-			className={cn('leading-7 [&:not(:first-child)]:mt-6', className)}>
-			{text}
-		</p>
+		<>
+			{asParent ? (
+				<div
+					{...props}
+					className={cn('leading-7 [&:not(:first-child)]:mt-6', className)}>
+					{text}
+				</div>
+			) : (
+				<p
+					{...props}
+					className={cn('leading-7 [&:not(:first-child)]:mt-6', className)}>
+					{text}
+				</p>
+			)}
+		</>
 	);
 };

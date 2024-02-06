@@ -8,17 +8,17 @@ source(file_path_ch7)
 source(file_path_ch4)
 
 
-#* @get /ch2
+#* @post /ch2
 #* @param method_name
 #* @param A
 #* @param b 
 function(method_name , A , b) {
-    if (method_name == "GaussTotal") {
-        list(status="success", x=gaussianEliminationTotalPivoting(A, b))
+    if (method_name == "Gauss") {
+        list(status="success", x=gaussianEliminationPartialPivoting(A, b))
     } else if (method_name == "LU") {
         x= luDecompositionSolve(A,b)
         list(status="success", x=x)
-    } else if (method_name == "cholesky") {
+    } else if (method_name == "Cholesky") {
         x =  choleskyDecompositionSolve(A,b)
         list(status="success", x=x)
     } else {

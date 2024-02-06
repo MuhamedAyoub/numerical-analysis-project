@@ -1,5 +1,5 @@
 'use client';
-import { TMatrix } from '@/types/zod';
+import { Ch2Methods, MatrixSchema, TMatrix } from '@/types/zod';
 import { useForm } from 'react-hook-form';
 import {
 	Form,
@@ -11,9 +11,18 @@ import {
 } from '../ui/form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '../ui/select';
 
 export default function MatrixForm() {
 	const form = useForm<TMatrix>({
+		resolver: zodResolver(MatrixSchema),
 		defaultValues: {
 			rows: 2,
 			columns: 2,
@@ -36,6 +45,31 @@ export default function MatrixForm() {
 			<form
 				onSubmit={form.handleSubmit(submitHandler)}
 				className="max-w-[789px] overflow-hidden flex flex-col gap-6">
+				<FormField
+					name="selected_method"
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="w-52">
+							<Select onValueChange={field.onChange} defaultValue={field.value}>
+								<FormControl>
+									<SelectTrigger>
+										<SelectValue placeholder="Select a Method" />
+									</SelectTrigger>
+								</FormControl>
+								<SelectContent>
+									<SelectItem value={Ch2Methods.LU}>{Ch2Methods.LU}</SelectItem>
+									<SelectItem value={Ch2Methods.Cholesky}>
+										{Ch2Methods.Cholesky}
+									</SelectItem>
+									<SelectItem value={Ch2Methods.Gauss}>
+										{Ch2Methods.Gauss}
+									</SelectItem>
+								</SelectContent>
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
 				<div className="flex gap-4">
 					<FormField
 						control={form.control}
