@@ -1,19 +1,11 @@
 library(plumber)
 file_path_ch2  = file.path(dir_path, "server/src/chapter2/algorithms.r")
 file_path_ch7  = file.path(dir_path, "server/src/chapter7/index.r")
+file_path_ch4  = file.path(dir_path, "server/src/chapter4/algorithms.r")
 
 source(file_path_ch2)
 source(file_path_ch7)
-
-#* @get /
-#* @param mat 
-function(mat) {
-    # mat is matrix
-    # return the dim of the matrix
-    print("Getting data")
-    print(mat)
-    list(status="success", dim=dim(mat) , msg="Hello" )
-}
+source(file_path_ch4)
 
 
 #* @get /ch2
@@ -37,8 +29,9 @@ function(method_name , A , b) {
 
 
 #* @get /ch7
-function( ) {
-    list(getPalindMatrix())
+#* @param method_name
+function(method_name) {
+    list(getPalindMatrix(selected_method = method_name))
 }
 
 
@@ -48,3 +41,4 @@ function( ) {
 function(mat, method_name) {
    getCompressedImage(mat, method_name)
 }
+
