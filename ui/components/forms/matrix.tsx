@@ -19,6 +19,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '../ui/select';
+import { systemSolverApi } from '@/actions/forms';
+import { Icons } from '../icons';
+import { H4 } from '../typography';
+import { useState } from 'react';
+import { set } from 'zod';
 
 export default function MatrixForm() {
 	const form = useForm<TMatrix>({
@@ -32,14 +37,17 @@ export default function MatrixForm() {
 			],
 		},
 	});
-
-	const submitHandler = (data: TMatrix) => {
+	const loading = form.formState.isSubmitting;
+	const submitHandler = async (data: TMatrix) => {
 		console.log(data);
+		const response = await systemSolverApi(data);
+		console.log(response);
 	};
 	// declare matrix type number
 	let matrix: number[][] = [[]];
 	const currentRow = form.getValues('rows');
 	const currentColumn = form.watch('columns');
+	const [vectorX, setVectorX] = useState<number[]>([]);
 	return (
 		<Form {...form}>
 			<form
@@ -153,10 +161,20 @@ export default function MatrixForm() {
 						))}
 					</div>
 				</div>
-				<Button type="submit" className="w-fit py-2 px-4 self-end">
-					Solve
+				<Button
+					type="submit"
+					className="w-fit py-2 px-4 self-end"
+					disabled={loading}>
+					Solve{' '}
+					{loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
 				</Button>
 			</form>
+			<div className="flex flex-col gap-4">
+				<div className="flex gap-2">
+					<H4 text="Solution" />
+					{vectorX}
+				</div>
+			</div>
 		</Form>
 	);
 }
