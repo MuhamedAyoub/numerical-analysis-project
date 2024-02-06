@@ -1,3 +1,4 @@
+'use client';
 import { TMatrix } from '@/types/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -9,6 +10,7 @@ import {
 	FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 
 export default function MatrixForm() {
 	const form = useForm<TMatrix>({
@@ -27,12 +29,13 @@ export default function MatrixForm() {
 	};
 	// declare matrix type number
 	let matrix: number[][] = [[]];
-	const currentRow = form.watch('rows');
+	const currentRow = form.getValues('rows');
 	const currentColumn = form.watch('columns');
-	matrix = new Array(currentRow).fill(new Array(currentColumn).fill(0));
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(submitHandler)}>
+			<form
+				onSubmit={form.handleSubmit(submitHandler)}
+				className="max-w-[789px] overflow-hidden flex flex-col gap-6">
 				<div className="flex gap-4">
 					<FormField
 						control={form.control}
@@ -49,7 +52,7 @@ export default function MatrixForm() {
 					/>
 					<FormField
 						control={form.control}
-						name="rows"
+						name="columns"
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Cols: </FormLabel>
@@ -61,11 +64,11 @@ export default function MatrixForm() {
 						)}
 					/>
 				</div>
-				<div className="flex gap-4">
-					<div className="flex flex-col gap-1">
-						{matrix.map((row, i) => (
+				<div className="flex gap-2">
+					<div className="flex flex-col gap-2">
+						{Array.from({ length: currentRow }, (_, i) => (
 							<div className="flex gap-1" key={i}>
-								{row.map((col, j) => (
+								{Array.from({ length: currentColumn }, (_, j) => (
 									<FormField
 										key={j}
 										control={form.control}
@@ -73,7 +76,15 @@ export default function MatrixForm() {
 										render={({ field }) => (
 											<FormItem key={j}>
 												<FormControl>
-													<Input {...field} /> * X<sub>{j + 1}</sub>
+													<div className="flex gap-1 items-center">
+														{j !== 0 && '+'}
+														<Input
+															{...field}
+															className="w-12 h-8"
+															value={field.value ?? '0'}
+														/>
+														*X<sub>{j + 1}</sub>
+													</div>
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -83,16 +94,23 @@ export default function MatrixForm() {
 							</div>
 						))}
 					</div>
-					<div>
+					<div className="flex flex-col gap-2">
 						{Array.from({ length: currentRow }, (_, i) => (
 							<FormField
-								key={i}
+								key={`b-${i}`}
 								control={form.control}
 								name={`values.${i}`}
 								render={({ field }) => (
-									<FormItem key={i}>
+									<FormItem>
 										<FormControl>
-											= <Input {...field} />
+											<div className="flex items-center gap-2">
+												={' '}
+												<Input
+													{...field}
+													className="w-16 h-8"
+													value={field.value ?? '0'}
+												/>
+											</div>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -101,6 +119,9 @@ export default function MatrixForm() {
 						))}
 					</div>
 				</div>
+				<Button type="submit" className="w-fit py-2 px-4 self-end">
+					Solve
+				</Button>
 			</form>
 		</Form>
 	);

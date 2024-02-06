@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 
 type Props = React.HTMLAttributes<HTMLHeadingElement> & {
-	text: string;
+	text?: string;
 };
 
 export const H1: React.FC<Props> = ({ text, className, ...props }) => {
