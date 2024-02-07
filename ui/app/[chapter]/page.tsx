@@ -1,4 +1,5 @@
 import SecondChapter from '@/components/chapters/second';
+import SixthChapter from '@/components/chapters/sixth'
 type Props = {
 	params: {
 		chapter: string;
@@ -17,7 +18,7 @@ export default function ChapterPage({ params: { chapter } }: Props) {
 		case '5':
 			return <h1>Chapter 5</h1>;
 		case '6':
-			return <h1>Chapter 6</h1>;
+			return <SixthChapter />;
 		case '7':
 			return <h1>Chapter 7</h1>;
 
