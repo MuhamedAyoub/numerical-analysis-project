@@ -1,8 +1,11 @@
+wait_time <- 40
+
 find_interval <- function(f, a, b) {
   upper <- b
   lower <- a
+  tolerance <- 0.0001
   h <- abs(b - a)
-  while (f(a) * f(b) > 0 && h > 0.0000001) {
+  while (f(a) * f(b) > 0 && h > tolerance) {
     if (b == upper) {
       h <- h / 2
       a <- lower
@@ -13,7 +16,7 @@ find_interval <- function(f, a, b) {
     }
   }
 
-  return(if (h > 0.0000001) c(a, b) else NULL)
+  return(if (h > tolerance) c(a, b) else NULL)
 }
 
 bisection <- function(f, a, b, tolerance) {
@@ -62,11 +65,51 @@ bisection <- function(f, a, b, tolerance) {
   ))
 }
 
+find_start <- function(f, fderiv2, a, b) {
+  if (f(a) * fderiv2(a) > 0) {
+    return(a)
+  }
+  if (f(b) * fderiv2(b) > 0) {
+    return(b)
+  }
+  upper <- b
+  lower <- a
+
+  h <- abs(a - b) / 2
+  while (TRUE) {
+    if (b == upper) {
+      h <- h / 2
+      a <- lower
+      b <- a + h
+    } else {
+      a <- a + h
+      b <- b + h
+    }
+
+    x <- (a + b) / 2
+    if (f(x) * fderiv2(x) > 0) {
+      return(x)
+    }
+    if (h < 0.0001) {
+      return(NULL)
+    }
+  }
+}
+
 newton <- function(fexpr, a, b, tolerance) {
   stime <- Sys.time()
   f <- function(x) eval(fexpr, list(x = x))
   fderiv <- function(x) eval(D(fexpr, "x"), list(x = x))
+  fderiv2 <- function(x) {
+    return(eval(
+      D(D(fexpr, "x"), "x"),
+      list(x = x)
+    ))
+  }
+  x <- find_start(f, fderiv2, a, b)
+
   iterations <- 0
+
   result <- c(x, "NULL")
 
   while (TRUE) {
@@ -79,14 +122,17 @@ newton <- function(fexpr, a, b, tolerance) {
     x <- x - f(x) / fderiv(x)
     iterations <- iterations + 1
 
-    if (is.nan(x) == 0) {
+    if (is.nan(x)) {
       return(list(
         error = "newton method diverges"
       ))
     }
-    result <- rbind(result, c(x, abs(x - prev) < tolerance))
+    result <- rbind(
+      result,
+      c(x, if (abs(x - prev) < tolerance) "TRUE" else "FALSE")
+    )
 
-    if (difftime(Sys.time(), stime, units = "secs") > 120) {
+    if (difftime(Sys.time(), stime, units = "secs") > wait_time) {
       return(list(
         error = "newton method took too long"
       ))
@@ -96,7 +142,7 @@ newton <- function(fexpr, a, b, tolerance) {
       break
     }
   }
-  result <- rbind("Xn", "|Xn - X(n-1)| < tolerance")
+  result <- rbind("Xn", "|Xn - X(n-1)| < tolerance", result)
 
   return(list(
     output = result,
@@ -108,28 +154,19 @@ newton <- function(fexpr, a, b, tolerance) {
 
 stringify <- function(coefficients) {
   i <- 0
-  coefficients <- Filter(
-    function(x) return(x != ""),
-    sapply(
-      as.vector(mode = "any", coefficients),
-      function(x) {
+  coefficients <- sapply(
+    coefficients,
+    function(x) {
+      if (x == 0) {
         i <<- i + 1
-        result <- ""
-        if (x != 0) {
-          result <- paste(result, if (x != 1 || i - 1 == 0) x else "", sep = "")
-          if (i - 1 != 0) {
-            result <- paste(
-              result,
-              "x",
-              if (i - 1 != 1) paste("^", (i - 1), sep = "") else "",
-              sep = ""
-            )
-          }
-        }
-        return(result)
+        return("0")
       }
-    )
+      string <- sprintf("%g * x ^ %g", x, i)
+      i <<- i + 1
+      return(string)
+    }
   )
+
   return(paste(coefficients, collapse = " + "))
 }
 
@@ -161,14 +198,15 @@ fixed_point <- function(coeff, a, b, tolerance) {
   } else {
     invcoeff <- (-1 / coeff[length(coeff)]) * coeff[-length(coeff)]
     g <- function(x) {
-      eval(
+      poly_value <- eval(
         parse(text = stringify(invcoeff)),
         list(x = x)
-      ) ^ (1 / (length(coeff) - 1))
+      )
+      return(sign(poly_value) * abs(poly_value) ^ (1 / (length(coeff) - 1)))
     }
   }
-  print(g)
 
+  x <- a
   iterations <- 0
   result <- c(x, "NULL")
   while (TRUE) {
@@ -181,9 +219,12 @@ fixed_point <- function(coeff, a, b, tolerance) {
         error = "fixed point method diverges"
       ))
     }
-    result <- rbind(result, c(x, abs(x - prev) < tolerance))
+    result <- rbind(
+      result,
+      c(x, if (abs(x - prev) < tolerance) "TRUE" else "FALSE")
+    )
 
-    if (difftime(Sys.time(), stime, units = "secs") > 120) {
+    if (difftime(Sys.time(), stime, units = "secs") > wait_time) {
       return(list(
         error = "fixed point method took too long"
       ))
@@ -194,7 +235,7 @@ fixed_point <- function(coeff, a, b, tolerance) {
     }
   }
 
-  result <- rbind(c("Xn", "|Xn - X(n-1)| < tolerance"))
+  result <- rbind(c("Xn", "|Xn - X(n-1)| < tolerance"), result)
   return(list(
     output = result,
     time = as.numeric(Sys.time() - stime),
@@ -203,7 +244,7 @@ fixed_point <- function(coeff, a, b, tolerance) {
   ))
 }
 
-root <- function(coeff, a, b, tolerance = 0.000001) {
+root <- function(coeff, a, b, tolerance = 0.00001) {
   expr <- parse(text = stringify(coeff))
   f <- function(x) eval(expr, list(x = x))
 
@@ -216,8 +257,6 @@ root <- function(coeff, a, b, tolerance = 0.000001) {
 
   a <- result[1]
   b <- result[2]
-  print(a)
-  print(b)
   result <- list(
     bisection = bisection(f, a, b, tolerance),
     newton = newton(expr, a, b, tolerance),
@@ -227,4 +266,11 @@ root <- function(coeff, a, b, tolerance = 0.000001) {
   return(result)
 }
 
-root(c(-1, 0, 1), -100, 50)
+middle <- function(paths) {
+  xsolutions <- list(NULL)
+  ysolutions <- list(NULL)
+  for (i in seq_len(length(paths) - 1)) {
+    for (j in (i + 1):length(paths)) {
+    }
+  }
+}
