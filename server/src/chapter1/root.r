@@ -139,8 +139,7 @@ newton <- function(fexpr, a, b, tolerance) {
     x <- x - (f(x) / fderiv(x))
     iterations <- iterations + 1
 
-    print(x)
-    if (is.nan(x)) {
+    if (!is.numeric(x) || is.infinite(x)) {
       return(list(
         error = "newton method diverges"
       ))
@@ -207,9 +206,11 @@ fixed_point <- function(coeff, a, b, tolerance) {
 
   g <- function(x) return(x)
   if (coeff[2] != 0) {
+    a <- -1 / coeff[2]
+    coeff[2] <- 0
     g <- function(x) {
       eval(
-        parse(text = stringify((-1 / coeff[2]) * coeff[-2])),
+        parse(text = stringify(a * coeff)),
         list(x = x)
       )
     }
@@ -232,7 +233,7 @@ fixed_point <- function(coeff, a, b, tolerance) {
     x <- g(x)
     iterations <- iterations + 1
 
-    if (is.nan(x)) {
+    if (!is.numeric(x) || is.infinite(x)) {
       return(list(
         error = "fixed point method diverges"
       ))
@@ -293,14 +294,13 @@ sum <- function(p, q) {
   min_length <- min(length(p), length(q))
   result <- c(
     p[seq_len(min_length)] + q[seq_len(min_length)],
-    if (length(p) != min_length) p[min_length:length(p)] else NULL,
+    if (length(p) != min_length) p[(min_length + 1):length(p)] else NULL,
     if (length(q) != min_length) q[(min_length + 1):length(q)] else NULL
   )
   return(if (length(result[result == 0]) == length(result)) c(0) else result)
 }
 
 middle <- function(paths) {
-  print(paths)
   outputs <- list()
   points <- list()
   # finding x and y solutions
@@ -329,7 +329,7 @@ middle <- function(paths) {
           )
         )
       )
-      xsolution <- list(unique(Filter(
+      xsolution <- unique(Filter(
         is.numeric,
         sapply(
           c("bisection", "newton", "fixed_point"),
@@ -341,7 +341,7 @@ middle <- function(paths) {
             )
           }
         )
-      )))
+      ))
 
       ydifference <- sum(
         sapply(paths[[i]]$y$coefficients, function(x) x),
@@ -365,19 +365,38 @@ middle <- function(paths) {
         )
       )
 
-      print(get("bisection", ysolution)$result)
-      ysolution <- list(unique(sapply(
-        c("bisection", "newton", "fixed_point"),
-        function(method) {
-          return(
-            if (!is.null(get(method, ysolution)$result)) {
-              round(get(method, ysolution)$result, digits = 1)
-            }
-          )
-        }
-      )))
+      ysolution <- unique(Filter(
+        is.numeric,
+        sapply(
+          c("bisection", "newton", "fixed_point"),
+          function(method) {
+            return(
+              if (!is.null(get(method, ysolution)$result)) {
+                round(get(method, ysolution)$result, digits = 1)
+              }
+            )
+          }
+        )
+      ))
 
-      solutions <- intersect(xsolution, ysolution)
+      solutions <- union(
+        Filter(
+          function(t) {
+            return(
+              eval(parse(text = stringify(ydifference)), list(x = t)) == 0
+            )
+          },
+          xsolution
+        ),
+        Filter(
+          function(t) {
+            return(
+              eval(parse(text = stringify(xdifference)), list(x = t)) == 0
+            )
+          },
+          ysolution
+        )
+      )
       points <- append(
         points,
         list(
@@ -411,7 +430,7 @@ middle <- function(paths) {
   points <- Filter(function(x) length(x) > 0, points)
   return(list(
     points = points,
-    output = output
+    output = outputs
   ))
 }
 
@@ -423,7 +442,7 @@ middle(list(
       end = 10
     ),
     y = list(
-      coefficients = list(0, 1),
+      coefficients = list(1, 0, 0, 1, 1),
       start = -10,
       end = 10
     )
@@ -435,7 +454,19 @@ middle(list(
       end = 10
     ),
     y = list(
-      coefficients = list(0, -1),
+      coefficients = list(4, -2, 1),
+      start = -10,
+      end = 10
+    )
+  ),
+  list(
+    x = list(
+      coefficients = list(0, 1),
+      start = -10,
+      end = 10
+    ),
+    y = list(
+      coefficients = list(0, 0, 0, -4),
       start = -10,
       end = 10
     )
