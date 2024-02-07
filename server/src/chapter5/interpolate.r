@@ -22,18 +22,12 @@ sum <- function(p, q) {
     return(p + q)
   }
 
-  if (length(p) > length(q)) {
-    bigger <- p
-    smaller <- q
-  } else {
-    bigger <- q
-    smaller <- p
-  }
-
-  result <- bigger[seq(1, length(smaller))] + smaller
-  result <- c(result, bigger[seq(length(smaller) + 1, length(bigger))])
-
-  return(result)
+  min_length <- min(length(p), length(q))
+  return(c(
+    p[seq_len(min_length)] + q[seq_len(min_length)],
+    if (length(p) != min_length) p[min_length:length(p)] else NULL,
+    if (length(q) != min_length) q[(min_length + 1):length(q)] else NULL
+  ))
 }
 
 stringify <- function(coefficients) {
@@ -272,14 +266,4 @@ interpolate <- function(points) {
   return(result$divided_diff$result)
 }
 
-# points should b x0,y0;x1,y1;...
-args <- commandArgs(trailingOnly = TRUE)
-
-points <- matrix(c(1, 1), nrow = 2)
-for (point in strsplit(args[1], ";")) {
-  points <- cbind(points, sapply(strsplit(point, ","), as.numeric))
-}
-
-points <- points[, 2:length(points[1, ])]
-
-print(paste(interpolate(points), collapse = ";"))
+sum(c(1, 2), c(0, 2, 3))
