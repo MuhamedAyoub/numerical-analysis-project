@@ -39,17 +39,11 @@ kernels <- list(
   simple_simpson = kernel("simple_simpson", sigma)
 )
 
-blur <- function(image) {
-  new_image <- image_convolve(image, kernels$trapezoids)
-  image_write(new_image, "./trapezoids.jpg")
-
-  new_image <- image_convolve(image, kernels$simple_trapezoids)
-  image_write(new_image, "./simple_trapezoids.jpg")
-
-  new_image <- image_convolve(image, kernels$simpson)
-  image_write(new_image, "./simpson.jpg")
-
-  new_image <- image_convolve(image, kernels$simple_simpson)
-  image_write(new_image, "./simple_simpson.jpg")
+blur <- function(image, sigma) {
+  return(list(
+    trapezoids = image_convolve(image, kernels$trapezoids)[[1]],
+    simple_trapezoids = image_convolve(image, kernels$simple_trapezoids)[[1]],
+    simpson = image_convolve(image, kernels$simpson)[[1]],
+    simple_simpson = image_convolve(image, kernels$simple_simpson)[[1]]
+  ))
 }
-
