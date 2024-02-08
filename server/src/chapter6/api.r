@@ -2,7 +2,7 @@
 source("blur.r")
 library(magick)
 
-#* @serializer json list(trapezoids="png",simpson="png",simple_simpson="png",simple_trapezoids="png")
+#* @serializer contentType list(type="image/jpeg")
 #* @post /chapter6
 function(image, sigma = 1) {
   print(image)
