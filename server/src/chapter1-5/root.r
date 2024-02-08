@@ -300,84 +300,106 @@ sum <- function(p, q) {
   return(if (length(result[result == 0]) == length(result)) c(0) else result)
 }
 
-middle <- function(paths) {
+subset <- function(set1, set2) {
+  return(
+    (set1[1] <= set2[1] && set2[2] <= set1[1]) ||
+      (set2[1] <= set1[1] && set1[2] <= set2[2])
+  )
+}
+
+intersections <- function(paths) {
+  if (length(paths) == 0 || length(paths) == 1) {
+    return(list())
+  }
   outputs <- list()
-  points <- list()
+  points <- c(NULL)
   # finding x and y solutions
   for (i in seq_len(length(paths) - 1)) {
     for (j in (i + 1):length(paths)) {
-      print(sprintf("i: %g, j: %g", i, j))
       output <- list(operation = sprintf("paths %g-%g", i, j))
-
-      xdifference <- sum(
-        sapply(paths[[i]]$x$coefficients, function(x) x),
-        sapply(paths[[j]]$x$coefficients, function(x) -1 * x)
-      )
-      xdifference <- c(xdifference)
-      xsolution <- root(
-        xdifference,
-        max(paths[[i]]$x$start, paths[[j]]$x$start),
-        max(paths[[i]]$x$end, paths[[j]]$x$end)
-      )
-      output <- append(
-        output,
-        list(
-          x = list(
-            append(list(method = "bisection"), xsolution$bisection),
-            append(list(method = "newton"), xsolution$newton),
-            append(list(method = "fixed point"), xsolution$fixed_point)
+      if (subset(
+        c(paths[[i]]$x$start, paths[[i]]$x$end),
+        c(paths[[j]]$x$start, paths[[j]]$x$end)
+      )) {
+        xdifference <- sum(
+          sapply(paths[[i]]$x$coefficients, function(x) x),
+          sapply(paths[[j]]$x$coefficients, function(x) -1 * x)
+        )
+        xdifference <- c(xdifference)
+        xsolution <- root(
+          xdifference,
+          max(paths[[i]]$x$start, paths[[j]]$x$start),
+          max(paths[[i]]$x$end, paths[[j]]$x$end)
+        )
+        output <- append(
+          output,
+          list(
+            x = list(
+              append(list(method = "bisection"), xsolution$bisection),
+              append(list(method = "newton"), xsolution$newton),
+              append(list(method = "fixed point"), xsolution$fixed_point)
+            )
           )
         )
-      )
-      xsolution <- unique(Filter(
-        is.numeric,
-        sapply(
-          c("bisection", "newton", "fixed_point"),
-          function(method) {
-            return(
-              if (!is.null(get(method, xsolution)$result)) {
-                round(get(method, xsolution)$result, digits = 1)
-              }
-            )
-          }
+        xsolution <- unique(Filter(
+          is.numeric,
+          sapply(
+            c("bisection", "newton", "fixed_point"),
+            function(method) {
+              return(
+                if (!is.null(get(method, xsolution)$result)) {
+                  round(get(method, xsolution)$result, digits = 1)
+                }
+              )
+            }
+          )
+        ))
+      } else {
+        xsolution <- list()
+      }
+
+      if (subset(
+        c(paths[[i]]$y$start, paths[[i]]$y$end),
+        c(paths[[j]]$y$start, paths[[j]]$y$end)
+      )) {
+        ydifference <- sum(
+          sapply(paths[[i]]$y$coefficients, function(x) x),
+          sapply(paths[[j]]$y$coefficients, function(x) -1 * x)
         )
-      ))
+        ydifference <- c(ydifference)
+        ysolution <- root(
+          ydifference,
+          max(paths[[i]]$y$start, paths[[j]]$y$start),
+          max(paths[[i]]$y$end, paths[[j]]$y$end)
+        )
 
-      ydifference <- sum(
-        sapply(paths[[i]]$y$coefficients, function(x) x),
-        sapply(paths[[j]]$y$coefficients, function(x) -1 * x)
-      )
-      ydifference <- c(ydifference)
-      ysolution <- root(
-        ydifference,
-        max(paths[[i]]$y$start, paths[[j]]$y$start),
-        max(paths[[i]]$y$end, paths[[j]]$y$end)
-      )
-
-      output <- append(
-        output,
-        list(
-          y = list(
-            append(list(method = "bisection"), ysolution$bisection),
-            append(list(method = "newton"), ysolution$newton),
-            append(list(method = "fixed point"), ysolution$fixed_point)
+        output <- append(
+          output,
+          list(
+            y = list(
+              append(list(method = "bisection"), ysolution$bisection),
+              append(list(method = "newton"), ysolution$newton),
+              append(list(method = "fixed point"), ysolution$fixed_point)
+            )
           )
         )
-      )
 
-      ysolution <- unique(Filter(
-        is.numeric,
-        sapply(
-          c("bisection", "newton", "fixed_point"),
-          function(method) {
-            return(
-              if (!is.null(get(method, ysolution)$result)) {
-                round(get(method, ysolution)$result, digits = 1)
-              }
-            )
-          }
-        )
-      ))
+        ysolution <- unique(Filter(
+          is.numeric,
+          sapply(
+            c("bisection", "newton", "fixed_point"),
+            function(method) {
+              return(
+                if (!is.null(get(method, ysolution)$result)) {
+                  round(get(method, ysolution)$result, digits = 1)
+                }
+              )
+            }
+          )
+        ))
+      } else {
+        ysolution <- list()
+      }
 
       solutions <- union(
         Filter(
@@ -397,28 +419,26 @@ middle <- function(paths) {
           ysolution
         )
       )
-      points <- append(
+      points <- c(
         points,
-        list(
-          sapply(
-            solutions,
-            function(t) {
-              list(
-                eval(
-                  parse(text = stringify(
-                    sapply(paths[[i]]$x$coefficients, function(x) x)
-                  )),
-                  list(x = t)
-                ),
-                eval(
-                  parse(text = stringify(
-                    sapply(paths[[i]]$y$coefficients, function(x) x)
-                  )),
-                  list(x = t)
-                )
+        sapply(
+          solutions,
+          function(t) {
+            list(
+              eval(
+                parse(text = stringify(
+                  sapply(paths[[i]]$x$coefficients, function(x) x)
+                )),
+                list(x = t)
+              ),
+              eval(
+                parse(text = stringify(
+                  sapply(paths[[i]]$y$coefficients, function(x) x)
+                )),
+                list(x = t)
               )
-            }
-          )
+            )
+          }
         )
       )
 
@@ -427,48 +447,50 @@ middle <- function(paths) {
   }
 
   # matching x solution with y solution of path i-j
-  points <- Filter(function(x) length(x) > 0, points)
+  if (length(points > 0)) {
+    points <- matrix(points, ncol = 2, byrow = TRUE)
+  }
   return(list(
-    points = points,
+    coords = points,
     output = outputs
   ))
 }
 
-middle(list(
-  list(
-    x = list(
-      coefficients = list(0, 1),
-      start = -10,
-      end = 10
-    ),
-    y = list(
-      coefficients = list(1, 0, 0, 1, 1),
-      start = -10,
-      end = 10
-    )
-  ),
-  list(
-    x = list(
-      coefficients = list(0, 1),
-      start = -10,
-      end = 10
-    ),
-    y = list(
-      coefficients = list(4, -2, 1),
-      start = -10,
-      end = 10
-    )
-  ),
-  list(
-    x = list(
-      coefficients = list(0, 1),
-      start = -10,
-      end = 10
-    ),
-    y = list(
-      coefficients = list(0, 0, 0, -4),
-      start = -10,
-      end = 10
-    )
-  )
-))
+# intersections(list(
+#   list(
+#     x = list(
+#       coefficients = list(0, 1),
+#       start = -10,
+#       end = 10
+#     ),
+#     y = list(
+#       coefficients = list(1, 0, 0, 1, 1),
+#       start = -10,
+#       end = 10
+#     )
+#   ),
+#   list(
+#     x = list(
+#       coefficients = list(0, 1),
+#       start = -10,
+#       end = 10
+#     ),
+#     y = list(
+#       coefficients = list(4, -2, 1),
+#       start = -10,
+#       end = 10
+#     )
+#   ),
+#   list(
+#     x = list(
+#       coefficients = list(0, 1),
+#       start = -10,
+#       end = 10
+#     ),
+#     y = list(
+#       coefficients = list(0, 0, 0, -4),
+#       start = -10,
+#       end = 10
+#     )
+#   )
+# ))
