@@ -1,4 +1,4 @@
 library(plumber)
 
-pr("api.r") %>%
+pr("./api/api.r") %>%
   pr_run(port = 3001)

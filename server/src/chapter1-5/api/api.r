@@ -1,5 +1,5 @@
 
-source("./interpolate.r")
+source("../logic/interpolate.r")
 
 #* @param objects an array of objects to process
 #* @serializer contentType list(type="text/plain")
