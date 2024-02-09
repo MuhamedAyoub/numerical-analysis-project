@@ -40,24 +40,25 @@ export default function MatrixForm() {
 	const submitHandler = async (data: TMatrix) => {
 		console.log(data);
 		try {
-
 			const response = await systemSolverApi(data);
 			console.log(response);
-			if(response.status[0] === "success") {
-				
+			if (response.status[0] === 'success') {
 				setSolution({
-					execution_time:response.execution_time,
-					x:response.x
-				})
+					execution_time: response.execution_time,
+					x: response.x,
+				});
 			}
-		}catch(e) {
-			console.log(e)
+		} catch (e) {
+			console.log(e);
 		}
 	};
 	// declare matrix type number
 	const currentRow = form.getValues('rows');
 	const currentColumn = form.watch('columns');
-	const [solution, setSolution] = useState<{execution_time:number,x:number[]} | null>(null);
+	const [solution, setSolution] = useState<{
+		execution_time: number;
+		x: number[];
+	} | null>(null);
 	return (
 		<Form {...form}>
 			<form
@@ -181,16 +182,23 @@ export default function MatrixForm() {
 					{loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
 				</Button>
 			</form>
-			{solution  && <div className="flex flex-col gap-4">
+			{solution && (
+				<div className="flex flex-col gap-4">
 					<H4 text="Solution" />
-					<P text={"Execution Time : " + solution.execution_time} />
-					<ul className='flex  flex-col gap-1' style={{listStyle:"inside"}} >
-					{solution.x.map((v,i) => (
-						<li key={i} className='flex gap-1'> <span>X<sub>{i}</sub>=</span> {v} </li>
-
-					))}
+					<P text={'Execution Time : ' + solution.execution_time} />
+					<ul className="flex  flex-col gap-1" style={{ listStyle: 'inside' }}>
+						{solution.x.map((v, i) => (
+							<li key={i} className="flex gap-1">
+								{' '}
+								<span>
+									X<sub>{i + 1}</sub>=
+								</span>{' '}
+								{v}{' '}
+							</li>
+						))}
 					</ul>
-			</div>}
+				</div>
+			)}
 		</Form>
 	);
 }
