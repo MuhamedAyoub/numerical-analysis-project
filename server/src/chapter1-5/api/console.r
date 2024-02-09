@@ -1,9 +1,10 @@
 # points should b x0,y0;x1,y1;...
 args <- commandArgs(trailingOnly = TRUE)
 
-source("../logic/interpolate.r")
+current <- getwd()
+source(sprintf("%s/../logic/interpolate.r", current))
 if (length(args) == 0) {
-  middle(jsonlite::read_json("../sample/query.json"))
+  middle(jsonlite::read_json(sprintf("%s/../sample/query.json", current)))
 }
 if (args[1] == "--json") {
   jsonlite::toJSON(middle(jsonlite::parse_json(args[2])))

@@ -309,7 +309,10 @@ subset <- function(set1, set2) {
 
 intersections <- function(paths) {
   if (length(paths) == 0 || length(paths) == 1) {
-    return(list())
+    return(list(
+      coords = list(),
+      output = list()
+    ))
   }
   outputs <- list()
   points <- c(NULL)
