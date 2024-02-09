@@ -21,7 +21,7 @@ import {
 } from '../ui/select';
 import { systemSolverApi } from '@/actions/forms';
 import { Icons } from '../icons';
-import { H4 } from '../typography';
+import { H4, P } from '../typography';
 import { useState } from 'react';
 
 export default function MatrixForm() {
@@ -39,14 +39,25 @@ export default function MatrixForm() {
 	const loading = form.formState.isSubmitting;
 	const submitHandler = async (data: TMatrix) => {
 		console.log(data);
-		const response = await systemSolverApi(data);
-		console.log(response);
+		try {
+
+			const response = await systemSolverApi(data);
+			console.log(response);
+			if(response.status[0] === "success") {
+				
+				setSolution({
+					execution_time:response.execution_time,
+					x:response.x
+				})
+			}
+		}catch(e) {
+			console.log(e)
+		}
 	};
 	// declare matrix type number
-	let matrix: number[][] = [[]];
 	const currentRow = form.getValues('rows');
 	const currentColumn = form.watch('columns');
-	const [vectorX, setVectorX] = useState<number[]>([]);
+	const [solution, setSolution] = useState<{execution_time:number,x:number[]} | null>(null);
 	return (
 		<Form {...form}>
 			<form
@@ -121,7 +132,7 @@ export default function MatrixForm() {
 														{j !== 0 && '+'}
 														<Input
 															{...field}
-															className="w-12 h-8"
+															className="w-16 h-8"
 															type="number"
 															value={field.value ?? '0'}
 														/>
@@ -170,12 +181,16 @@ export default function MatrixForm() {
 					{loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
 				</Button>
 			</form>
-			<div className="flex flex-col gap-4">
-				<div className="flex gap-2">
+			{solution  && <div className="flex flex-col gap-4">
 					<H4 text="Solution" />
-					{vectorX}
-				</div>
-			</div>
+					<P text={"Execution Time : " + solution.execution_time} />
+					<ul className='flex  flex-col gap-1' style={{listStyle:"inside"}} >
+					{solution.x.map((v,i) => (
+						<li key={i} className='flex gap-1'> <span>X<sub>{i}</sub>=</span> {v} </li>
+
+					))}
+					</ul>
+			</div>}
 		</Form>
 	);
 }

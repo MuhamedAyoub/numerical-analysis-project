@@ -42,54 +42,71 @@ gaussianEliminationTotalPivoting <- function(a_matrix, b_matrix) {
     }
   }
 
-  return(variables)
+    return(list(status="success",x=variables))
+
 }
 
 luDecompositionSolve <- function(A, B) {
-    n <- nrow(A)
-    m <- ncol(A)
-   if (nrow(A) != ncol(A)) { 
-      return (list(status="error", msg="Matrix A must be square"))
+  ## Start compute the execution time 
+  # start_time = Sys.time()
+  n <- nrow(A)
+  m <- ncol(A)
+  
+  if (nrow(A) != ncol(A)) {
+    return(list(status="error", msg="Matrix A must be square"))
+  }
+  
+  lower <- matrix(0, n, n)
+  upper <- matrix(0, n, n)
+  Tol <- 1e-10  # Tolerance for division by zero
 
-    } 
-    lower <- matrix(0, n, n)
-    upper <- matrix(0, n, n)
-
-    for (i in 1:n) {
-        for (k in i:m) {
-            upper[i, k] <- A[i, k] - sum(lower[i, 1:(i - 1)] * upper[1:(i - 1), k])
-        }
-
-        for (k in i:n) {
-            if (i == k) {
-                lower[i, i] <- 1 # Diagonal as 1
-            } else {
-                lower[k, i] <- (A[k, i] - sum(lower[k, 1:(i - 1)] * upper[1:(i - 1), i])) / upper[i, i]
-            }
-        }
+  for (i in 1:n) {
+    for (k in i:m) {
+      upper[i, k] <- A[i, k] - sum(lower[i, 1:(i - 1)] * upper[1:(i - 1), k])
     }
-    y <- numeric(n)
-    for (i in 1:n) {
-        y[i] <- (B[i] - sum(lower[i, 1:(i - 1)] * y[1:(i - 1)])) / lower[i, i]
-    }
-
-    # Ux = y (back substitution)
-    x <- numeric(n)
-    for (i in n:1) {
-        if (i < n) {
-            x[i] <- (y[i] - sum(upper[i, (i + 1):n] * x[(i + 1):n])) / upper[i, i]
-        } else {
-            x[i] <- y[i] / upper[i, i]
-        }
-    }
-
-    return(list(status="success", x=x))
     
+    for (k in i:n) {
+      if (i == k) {
+        lower[i, i] <- 1
+      } else {
+        if (abs(upper[i, i]) > Tol) {
+          lower[k, i] <- (A[k, i] - sum(lower[k, 1:(i - 1)] * upper[1:(i - 1), i])) / upper[i, i]
+        } else {
+          # Handle division by zero (e.g., return error, set element to NA)
+          warning("Division by zero encountered. Consider handling this case appropriately.")
+          # Your custom handling logic here
+        }
+      }
+    }
+  }
+  
+  y <- numeric(n)
+  for (i in 1:n) {
+    y[i] <- (B[i] - sum(lower[i, 1:(i - 1)] * y[1:(i - 1)])) / lower[i, i]
+  }
+  
+  # Ux = y (back substitution)
+  x <- numeric(n)
+  for (i in n:1) {
+    if (i < n) {
+      if (abs(upper[i, i]) > Tol) {
+        x[i] <- (y[i] - sum(upper[i, (i + 1):n] * x[(i + 1):n])) / upper[i, i]
+      } else {
+        # Handle division by zero (e.g., return error, set element to NA)
+        warning("Division by zero encountered. Consider handling this case appropriately.")
+        # Your custom handling logic here
+      }
+    } else {
+      x[i] <- y[i] / upper[i, i]
+    }
+  }
+  # end_time = Sys.time() - start_time
+  
+  return(list(status="success", x=x, execution_time="Not supported in the web"))
 }
-
-
-
 choleskyDecompositionSolve <- function(A, B) {
+  # start_time = Sys.time()
+
   n <- nrow(A)
   
   # Check if A is square and positive definite
@@ -128,12 +145,16 @@ choleskyDecompositionSolve <- function(A, B) {
     } else {
       x[i] <- y[i] / L[i, i]
     }
-  }
+  } 
+    # end_time = Sys.time() - start_time
   
-  return(x)
+  return(list(status="success", x=x, execution_time="Not supported on the web"))
+
+  
 }
 gaussianEliminationPartialPivoting <- function(a_matrix, b_matrix) {
-  n <- nrow(a_matrix)
+  # start_time = Sys.time()
+    n <- nrow(a_matrix)
   augmented_matrix <- cbind(a_matrix, b_matrix)
 
   # Partial pivoting
@@ -164,7 +185,9 @@ gaussianEliminationPartialPivoting <- function(a_matrix, b_matrix) {
     augmented_matrix[1:(i - 1), n + 1] <- augmented_matrix[1:(i - 1), n + 1] - augmented_matrix[1:(i - 1), i] * x[i]
   }
 
-    return(x)
+  # end_time = Sys.time() - start_time
+  
+  return(list(status="success", x=x, execution_time="Not supported on the web"))
 }
 
 # Test the Algorithms on the console
