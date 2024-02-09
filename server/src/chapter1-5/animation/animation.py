@@ -2,43 +2,66 @@ import asyncio
 from graphics import Rectangle, Point, Circle, Oval, GraphWin
 import objects
 
-# print(json.loads(os.popen(f"Rscript console.r --json '{json.dumps(json.load(open('query.json')))}'").read()))
+# coordinates start at top left
 window = GraphWin("Animation", 700, 700, autoflush=True)
+window.setBackground("black")
 
-async def f():
-    x = 355
-    y = 355
-    previous = None
-    for i in range(10):
-        await asyncio.sleep(0.2)
-        if previous != None:
-            previous.undraw()
-        previous = Circle(Point(x, y), 50)
-        previous.draw(window)
-        x += 5
-        y += 5
-
-r = objects.Animatable(Rectangle(Point(375, 375), Point(325, 325)), window).draw()
-o = objects.Animatable(Oval(Point(690, 690), Point(660, 670)), window).draw()
+r = objects.Animatable(Rectangle(Point(-30, -30), Point(30, 30)), window, "blue").draw()
+c = objects.Animatable(Circle(Point(50, 600), 60), window, "red").draw()
+o = objects.Animatable(Oval(Point(640, 575), Point(660, 625)), window, "red").draw()
+csize = objects.Animatable(Circle(Point(350, 500), 50), window, "purple").draw()
 
 asyncio.run(
-    r.animate([
-        {
-            "operation": "position",
-            "points": [
-                [350, 350],
-                [375, 375],
-                [375, 350],
-                [350, 325],
-                [350, 350]
-            ],
-            "duration": 10
-        }
-    ]).play()
+    objects.Animator([
+        r.animate([
+            {
+                "operation": "position",
+                "points": [
+                    [0, 0],
+                    [337, 160],
+                    [350, 350],
+                    [363, 160],
+                    [700, 0]
+                ],
+                "duration": 10
+            },
+        ]),
+        c.animate([
+            {
+                "operation": "position",
+                "points": [
+                    [50, 600],
+                    [337, 170],
+                    [350, 50]
+                ],
+                "duration": 10
+            }
+        ]),
+        o.animate([
+            {
+                "operation": "position",
+                "points": [
+                    [650, 600],
+                    [363, 170],
+                    [350, 50]
+                ],
+                "duration": 10
+            }
+        ]),
+        csize.animate([
+            {
+                "operation": "size",
+                "points": [1, 2, 1.2, 3, 0.8],
+                "duration": 7.5
+            },
+            {
+                "operation": "size",
+                "points": [1.5, 2.5, 3, 0.1],
+                "duration": 2
+            }
+        ])
+    ], window).play()
 )
-
-# objects.Animator([
-# ], window).play()
 
 window.getMouse()
 window.close()

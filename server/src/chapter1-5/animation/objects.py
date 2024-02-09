@@ -2,7 +2,8 @@ import asyncio
 from math import floor
 import os
 import json
-from graphics import Circle, GraphWin, Oval, Point, Rectangle
+from typing import LiteralString
+from graphics import Circle, GraphWin, Oval, Point, Rectangle, Text, color_rgb
 
 class Polynomial:
     def __init__(self, coefficients):
@@ -11,38 +12,77 @@ class Polynomial:
     def eval(self, value):
         return sum([self.coeffiecients[i] * (value ** i) for i in range(len(self.coeffiecients))])
 
+class Message:
+    def __init__(self, text, window: GraphWin):
+        self.text = Text(Point(window.getWidth() / 2, window.getHeight() / 2), text)
+        self.text.setFace("helvetica")
+        self.text.setSize(15)
+        self.text.setStyle("bold")
+        self.text.draw(window)
+        self.text.setTextColor(color_rgb(216, 39, 57))
+        pass
+
+    def destroy(self):
+        self.text.undraw()
+
 class Animator:
     def __init__(self, playables, window):
-        self.playables = playables
-        self.update_intersections()
+        self.intersection_color = color_rgb(128, 15, 240)
         self.intersection_radius = 5
         self.window = window
+        self.playables = playables
+        self.update_intersections()
 
     def update_intersections(self):
         animations = []
         for playable in self.playables:
-            animation = playable.get_next_position_animation()
+            animation = playable.get_first_position_animation()
             if (animation != None):
-                animations.append(animation)
+                animations.append({
+                    "x" :{
+                        "coefficients": animation["polynomial"]["x"], 
+                        "start": 0,
+                        "end": animation["duration"]
+                    },
+                    "y" :{
+                        "coefficients": animation["polynomial"]["y"], 
+                        "start": 0,
+                        "end": animation["duration"]
+                    },
+                })
         self.intersections = []
         if (len(animations) > 0):
-            intersections = json.loads(os.popen(f"Rscript --json '{json.dumps(animations)}'").read())
-            print(intersections)
-            for intersection in intersections:
-                self.intersections.append(Circle(Point(intersection[0][0], intersection[1][0]), self.intersection_radius))
 
-    def play(self):
+            message = Message("processing intersections...", self.window)
+            out = os.popen(f"Rscript ../api/root.r --json '{json.dumps(animations)}'").read()
+            intersections = json.loads(out)
+            print(out)
+            message.destroy()
+
+            for intersection in intersections:
+                circle = Circle(Point(intersection[0][0], intersection[1][0]), self.intersection_radius)
+                circle.setFill(self.intersection_color)
+                self.intersections.append(circle)
+
+    async def play(self):
         for intersection in self.intersections:
             intersection.draw(self.window)
+        animations = []
         for playable in self.playables:
-            playable.play()
-            z
+            animations.append(playable.play())
+        await asyncio.gather(*animations)
         
 class Playable:
     def __init__(self, animatable):
         self.animatable = animatable
         self.queues = {}
-        output = json.loads(os.popen(f"Rscript ../api/console.r --json '[{json.dumps(animatable.animations)}]'").read())
+
+        message = Message(f"processing {f'{self.animatable.type} at {self.animatable.getXY()}'}...", self.animatable.window)
+        out = os.popen(f"Rscript ../api/console.r --json '[{json.dumps(animatable.animations)}]'").read()
+        output = json.loads(out)
+        print(out)
+        message.destroy()
+
         for attribute in output["objectPolynomials"][0]:
             animation = {
                 "operation": attribute["operation"][0],
@@ -79,11 +119,24 @@ class Playable:
         await asyncio.gather(*tasks)
 
 class Animatable:
-    def __init__(self, shape: Circle | Oval | Rectangle, window: GraphWin) -> None:
+    def __init__(self, shape: Circle | Oval | Rectangle, window: GraphWin, color: str | LiteralString | None = None) -> None:
+        self.type = ""
+        if (type(shape) == Circle):
+            self.type = "Circle"
+        elif (type(shape) == Rectangle):
+            self.type = "Rectangle"
+        elif (type(shape) == Oval):
+            self.type = "Oval"
         self.step = 0.025
         self.shape = shape
+        self.color = color
+        if (color != None):
+            self.shape.setFill(color)
         self.original = shape.clone()
         self.window = window
+    def apply_styles(self, shape: Circle | Oval | Rectangle):
+        if self.color != None:
+            shape.setFill(self.color)
 
     def draw(self):
         self.shape.draw(self.window)
@@ -94,6 +147,9 @@ class Animatable:
 
     def getY(self):
         return self.shape.getCenter().getY()
+
+    def getXY(self):
+        return f"({self.getX()}, {self.getY()})"
 
     def getX_diff(self):
         if (type(self.shape) == Circle):
@@ -109,6 +165,7 @@ class Animatable:
         new = Circle(Point(0, 0), 0)
         if (type(self.shape) == Circle):
             new = Circle(self.shape.getCenter(), self.original.getRadius() * multiplier)
+            self.apply_styles(new)
             self.shape.undraw()
             self.shape = new
             self.shape.draw(self.window)
@@ -130,7 +187,8 @@ class Animatable:
             new = Oval(top_right, bottom_left)
         elif (type(self.shape == Rectangle)):
             new = Rectangle(top_right, bottom_left)
-        
+
+        self.apply_styles(new)
         self.shape.undraw()
         self.shape = new
         self.shape.draw(self.window)
@@ -155,7 +213,6 @@ class Animatable:
                         [(i + 1) / len(attribute["points"]), *attribute["points"][i]] 
                         for i in range(len(attribute["points"]))
                     ]
-                    print(attribute["points"])
                     attribute["points"].insert(0, [0, self.getX(), self.getY()])
                 if (attribute["points"][len(attribute["points"]) - 1][0] != 1):
                     raise ValueError("last keyframe should be at 100%")
