@@ -23,7 +23,6 @@ import { systemSolverApi } from '@/actions/forms';
 import { Icons } from '../icons';
 import { H4 } from '../typography';
 import { useState } from 'react';
-import { set } from 'zod';
 
 export default function MatrixForm() {
 	const form = useForm<TMatrix>({
@@ -123,6 +122,7 @@ export default function MatrixForm() {
 														<Input
 															{...field}
 															className="w-12 h-8"
+															type="number"
 															value={field.value ?? '0'}
 														/>
 														*X<sub>{j + 1}</sub>
@@ -150,6 +150,7 @@ export default function MatrixForm() {
 												<Input
 													{...field}
 													className="w-16 h-8"
+													type="number"
 													value={field.value ?? '0'}
 												/>
 											</div>

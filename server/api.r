@@ -51,10 +51,16 @@ function(method_name) {
 }
 
 
-#* @get /ch4
+#* @post /ch4
 #* @param mat
-#* @param method_name
-function(mat, method_name) {
-   getCompressedImage(mat, method_name)
+#* @param width
+#* @param height
+#* @param selected_method
+function(mat, width, height, selected_method) {
+print("Received Request ...")
+
+mat  = as.array(mat)
+ getCompressedImage(img_matrix = mat, method_name = selected_method)
+
 }
 

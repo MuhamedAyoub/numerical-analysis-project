@@ -70,7 +70,7 @@ getPalindMatrix <- function(selected_method) {
   while (tail(t_n, 1) < T) {
     # Keep going until T is reached.
     # Store numerical solutions into y_n
-    new_y <- y_n[, ncol(y_n)] + h * RK4(t_n[length(t_n)], y_n[, ncol(y_n)], h, RHS)
+    new_y <- y_n[, ncol(y_n)] +  RK4(t_n[length(t_n)], y_n[, ncol(y_n)], h, RHS)
     y_n <- cbind(y_n, new_y)
     t_n <- c(t_n, tail(t_n, 1) + h)
     
@@ -117,4 +117,25 @@ return (list(results = results, df = df))
 
 
 
-# Define the Runge-Kutta 2nd order method
+library(ggplot2)
+
+# Function to plot the results
+plot_results <- function(results, method) {
+  ggplot(results, aes(x = t, y =theta1, color = "Theta 1")) +
+    geom_line() +
+    geom_line(aes(x = t, y =theta2, color = "Theta 2")) +
+    labs(title = paste("Pendulum Angle vs Time (", method, ")", sep = ""),
+         x = "Time",
+         y = "Angle") +
+    scale_color_manual(values = c("Theta 1" = "blue", "Theta 2" = "red")) +
+    theme_minimal()
+}
+
+
+  # Run simulation
+  sim <- getPalindMatrix("RK4")
+
+
+  # Plot results
+  plot= plot_results(sim$results, "RK4")
+  print(plot)
