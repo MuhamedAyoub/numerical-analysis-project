@@ -1,6 +1,8 @@
 'use client';
+import { imageCompressorApi } from '@/actions/forms';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { Ch4Methods } from '@/types/zod';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
@@ -32,31 +34,61 @@ export default function FourthChapter() {
 		}
 	};
 
-	const renderCount = useRef(0).current++;
-	console.log('renderCount', renderCount);
-	const confirmHandler = () => {
-		console.log('confirmHandler');
+	const confirmHandler = async () => {
 		setLoading(ELoading.LOADING);
-		const canvas = canvasRef.current;
-		const ctx = canvas?.getContext('2d');
+		const canvas = canvasRef.current!;
+		const ctx = canvas?.getContext('2d')!;
 		ctx?.drawImage(currentImage as HTMLImageElement, 0, 0);
-		const matrix = ctx?.getImageData(
-			0,
-			0,
-			currentImage?.width!,
-			currentImage?.height!
-		);
-		console.log(matrix?.data);
+		const originalImageWidth = currentImage?.width!;
+		const originalImageHeight = currentImage?.height!;
+		const matrix = ctx?.getImageData(0, 0, originalImageWidth, originalImageHeight);
+	
+		if (!matrix) {
+			console.error("Failed to get image data");
+			setLoading(ELoading.ERROR);
+			return;
+		}
+	
+		// Compress the image
+		const response = await imageCompressorApi({
+			mat: matrix.data,
+			height: originalImageHeight,
+			width: originalImageWidth,
+			selected_method: Ch4Methods.GIVENS_ROTATION
+		});
+	
+		if (!response || !response.img_matrix) {
+			console.error("Failed to compress image");
+			setLoading(ELoading.ERROR);
+			return;
+		}
+	
+		// Ensure that the compressed image data length matches the expected size
+		const expectedDataLength = originalImageWidth * originalImageHeight * 4;
+		if (response.img_matrix.length !== expectedDataLength) {
+			console.error("Compressed image data length doesn't match the expected size");
+			setLoading(ELoading.ERROR);
+			return;
+		}
+	
+		// Create a new Uint8ClampedArray from the compressed image data
+		const arr = new Uint8ClampedArray(response.img_matrix);
+	
+		// Create a new ImageData object with the original width and height
+		const imageData = new ImageData(arr, originalImageWidth, originalImageHeight);
+	
+		// Clear the canvas
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+	
+		// Put the compressed image onto the canvas
+		ctx.putImageData(imageData, 0, 0);
+	
+		// Get the canvas data URL
+		const href2 = canvas.toDataURL('image/png');
+		setHref(href2);
 		setLoading(ELoading.SUCCESS);
-		// Draw image from the matrix
-		setTimeout(() => {
-			ctx?.putImageData(matrix as ImageData, 0, 0);
-			setLoading(ELoading.SUCCESS);
-			// now make the image downloadable
-			const href2 = canvas?.toDataURL('image/png');
-			setHref(href2 as string);
-		}, 3000);
 	};
+	
 
 	return (
 		<div className="p-6 flex justify-center items-center">

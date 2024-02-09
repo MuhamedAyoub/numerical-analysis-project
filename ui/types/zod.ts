@@ -12,4 +12,19 @@ export const MatrixSchema = z.object({
 	values: z.array(z.coerce.number().default(0)),
 });
 
+export enum Ch4Methods {
+	POWER_ITERATION = 'POWER_ITERATION',
+	DEFLATION_METHOD = 'DEFLATION_METHOD',
+	GIVENS_ROTATION = 'GIVENS_ROTATION',
+}
+
+export type TCh4Body = {
+	selected_method: Ch4Methods;
+	mat: Uint8ClampedArray
+	width: number;
+	height: number;
+}
+
 export type TMatrix = z.infer<typeof MatrixSchema>;
+
+

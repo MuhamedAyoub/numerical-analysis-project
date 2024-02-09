@@ -1,26 +1,21 @@
-# Power iteration Algorithms
+# Power iteration Algorithm
 power_iteration <- function(A, max_iter = 1000, tol = 1e-6) {
-    n <- ncol(A)
-    v <- matrix(rnorm(n), ncol = 1)
-    # iterations ..
-    for (iter in 1:max_iter) {
-        Av <- A %*% v
-        lambda <- sum(Av * v) / sum(v * v)
-        v <- Av / sqrt(sum(Av * Av))
-        if (iter > 1 && abs(lambda - old_lambda) < tol) {
-            break
-        }
-        old_lambda <- lambda
+  n <- ncol(A)
+  v <- matrix(rnorm(n), ncol = 1)
+  for (iter in 1:max_iter) {
+    Av <- A %*% v
+    lambda <- sum(Av * v) / sum(v * v)
+    v <- Av / sqrt(sum(Av * Av))
+    if (iter > 1 && abs(lambda - old_lambda) < tol) {
+      break
     }
+    old_lambda <- lambda
+  }
 
-    # Return The lambda value and  Vector U
-    # you can return the real value of U by removing ceiling function
-    return(list(lambda = lambda, v = v))
+  return(list(lambda = lambda, v = v))
 }
 
-
-# Méthode de déflation
-
+# Deflation method
 deflation_method <- function(A, num_eigenvalues, max_iter = 1000, tol = 1e-6) {
   n <- ncol(A)
   eigenvalues <- numeric(num_eigenvalues)
@@ -31,13 +26,13 @@ deflation_method <- function(A, num_eigenvalues, max_iter = 1000, tol = 1e-6) {
     eigenvalues[i] <- result$lambda
     eigenvectors[, i] <- result$v
     # Deflation step
-    A <- A - eigenvalues[i] * (eigenvectors[, i] %*% t(eigenvectors[, i])) / (t(eigenvectors[, i]) %*% eigenvectors[, i] )
+    u <- matrix(eigenvectors[, i], nrow = n, ncol = 1) # Column vector
+    v <- matrix(t(eigenvectors[, i]), nrow = 1, ncol = n) # Row vector
+    A <- A - eigenvalues[i] * (u %*% t(v)) / (t(v) %*% u)
   }
 
   return(list(eigenvalues = eigenvalues, eigenvectors = eigenvectors))
 }
-
-# Méthode de Jacobi et Rotations de Givens
 givens_rotation <- function(A, max_iter = 1000, tol = 1e-6) {
   n <- ncol(A)
   G <- diag(1, n)
@@ -52,7 +47,6 @@ givens_rotation <- function(A, max_iter = 1000, tol = 1e-6) {
     p <- indices[1, 1]
     q <- indices[1, 2]
 
-    # Compute the rotation angle and sine/cosine values
     theta <- atan2(A[q, q] - A[p, p], 2 * A[p, q])
     c <- cos(theta)
     s <- sin(theta)
@@ -63,8 +57,13 @@ givens_rotation <- function(A, max_iter = 1000, tol = 1e-6) {
     G_pq[p, q] <- -s
     G_pq[q, p] <- s
 
-    # Update the matrices A and G
-    A <- t(G_pq) %*% A %*% G_pq
+    # Compute t(G_pq) %*% A
+    temp <- t(G_pq) %*% A
+    
+    # Compute A <- temp %*% G_pq
+    A <- temp %*% G_pq
+    
+    # Update the matrix G
     G <- G %*% G_pq
   }
 
@@ -72,26 +71,11 @@ givens_rotation <- function(A, max_iter = 1000, tol = 1e-6) {
 }
 
 
-# controller 
 getCompressedImage <- function(img_matrix, method_name, num_eigenvalues = 50) {
-  if(method_name == "power_iteration") {
-    result <- power_iteration(A = img_matrix)
-    dominant_eigenvector <- result$v
-    projected_data <- img_matrix %*% dominant_eigenvector %*% t(dominant_eigenvector)  
-    return(list(status="success", compressed_image=projected_data))  
-  } else if(method_name == "deflation_method") {
-    result <- deflation_method(img_matrix, num_eigenvalues)
-    dominant_eigenvector <- result$eigenvectors
-    projected_data <- img_matrix %*% dominant_eigenvector %*% t(dominant_eigenvector)
-    return (list(status="success", compressed_image=projected_data ))
-  } else if(method_name == "givens_rotation") {
-    result <- givens_rotation(A = img_matrix)
-    dominant_eigenvector <- result$eigenvectors
-    # Project image matrix onto the dominant eigenvector
-    projected_data <- img_matrix %*% dominant_eigenvector %*% t(dominant_eigenvector)
-    return(list(status="success", compressed_image=projected_data))
-  } else {
-    return(list(status="error", msg="Method not found"))
-  }
+  svd_result =  svd(img_matrix)
+  u =  svd_result$u
+  sigma =  diag(svd_result$d)
+  v  = svd_result$v
+  rsponse = u %*% sigma %*% t(v)
+  return (list(status="success", msg="Compressed Image", img_matrix = rsponse)) 
 }
-

@@ -1,11 +1,11 @@
 library(plumber)
 file_path_ch2  = file.path(dir_path, "server/src/chapter2/algorithms.r")
-file_path_ch7  = file.path(dir_path, "server/src/chapter7/index.r")
-file_path_ch4  = file.path(dir_path, "server/src/chapter4/algorithms.r")
+# file_path_ch7  = file.path(dir_path, "server/src/chapter7/index.r")
+# file_path_ch4  = file.path(dir_path, "server/src/chapter4/algorithms.r")
 
 source(file_path_ch2)
-source(file_path_ch7)
-source(file_path_ch4)
+# source(file_path_ch7)
+# source(file_path_ch4)
 
 
 #' @filter cors
@@ -28,33 +28,29 @@ cors <- function(req, res) {
 #* @param coefficient
 #* @param values
 function(selected_method , coefficient , values) {
-
     coefficient = as.matrix(coefficient)
-    print(coefficient)
-    if (selected_method == "Gauss") {
-        gaussianEliminationPartialPivoting(A=coefficient, b=values)
-    } else if (selected_method == "LU") {
-         luDecompositionSolve(A=coefficient,B=values)
-    } else if (selected_method == "Cholesky") {
-        choleskyDecompositionSolve(A=coefficient,B=values)
-    } else {
-        list(status="error", msg="Method not found")
-    }
+   Ch2Controller(A = coefficient, B = values, selected_method = selected_method)
 }
 
+## these routes are Replaced by python code 
+
+# #* @get /ch7
+# #* @param method_name
+# function(method_name) {
+#     list(getPalindMatrix(selected_method = method_name))
+# }
 
 
-#* @get /ch7
-#* @param method_name
-function(method_name) {
-    list(getPalindMatrix(selected_method = method_name))
-}
+# #* @post /ch4
+# #* @param mat
+# #* @param width
+# #* @param height
+# #* @param selected_method
+# function(mat, width, height, selected_method) {
+# print("Received Request ...")
 
+# mat  = as.array(mat)
+#  getCompressedImage(img_matrix = mat, method_name = selected_method)
 
-#* @get /ch4
-#* @param mat
-#* @param method_name
-function(mat, method_name) {
-   getCompressedImage(mat, method_name)
-}
+# }
 

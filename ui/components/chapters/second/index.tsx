@@ -3,8 +3,8 @@ import MatrixForm from '@/components/forms/matrix';
 import { Icons } from '@/components/icons';
 
 const info = {
-	title: 'Module Title 2 :',
-	subtitle: 'Module Subtitle 2',
+	title: 'Algorithms for Solving Systems :',
+	subtitle: 'Overview',
 };
 export default function SecondChapter() {
 	return (
@@ -13,11 +13,37 @@ export default function SecondChapter() {
 				<InfoSection
 					{...info}
 					desc={
+						<>
 						<p>
-							desc: lorem ipsum dolor sit amet, consectetur adipiscing elit.
-							Nulla quam velit, <b> vestibulum in vel, auctor urna </b>. Lorem
-							ipsum dolor,
+						This document describes R functions that implement several algorithms for solving systems of linear equations with 10 variables. The included algorithms are:
 						</p>
+<ul style={{listStyle:"inside"}}>
+<li className='font-bold'>
+
+Gaussian Elimination with Total Pivoting
+</li>
+
+<li className='font-bold'>
+
+Gaussian Elimination with Partial Pivoting
+</li>
+<li className='font-bold'>
+
+LU Decomposition
+</li>
+<li className='font-bold'>
+Cholesky Decomposition
+</li>
+
+</ul>
+
+						<b>
+						Additional Information
+						</b>
+						<p>
+Each function includes input validation to ensure correct matrix dimensions and properties.
+The controller function allows for choosing the desired solution method.</p>
+						</>
 					}>
 					<Icons.equations className="w-8 h-8" />
 				</InfoSection>

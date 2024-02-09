@@ -25,7 +25,7 @@ export default function RootLayout({
 			<body
 				className={cn(
 					fira.className,
-					'h-screen w-screen flex flex-col justify-between'
+					'min-h-[100vh] w-screen flex flex-col justify-between'
 				)}>
 				<Header />
 				<main className="w-full h-full">{children}</main>
