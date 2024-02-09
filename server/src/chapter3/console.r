@@ -1,4 +1,4 @@
-source("solve.r")
+source(sprintf("%s/solve.r", getwd()))
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -13,9 +13,7 @@ for (v in strsplit(args[1], ";")) {
 }
 
 base <- base[2:length(base[, 1]), ]
-print(base)
 
 result <- solvesys(base, vector, rep(0, length(vector)))
 print(result)
-print("                               Solution")
-print(result$jacobi$result)
+print(paste(result$jacobi$result, collapse = ";"))
