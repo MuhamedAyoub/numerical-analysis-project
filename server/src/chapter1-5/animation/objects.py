@@ -27,6 +27,7 @@ class Animator:
         self.intersections = []
         if (len(animations) > 0):
             intersections = json.loads(os.popen(f"Rscript --json '{json.dumps(animations)}'").read())
+            print(intersections)
             for intersection in intersections:
                 self.intersections.append(Circle(Point(intersection[0][0], intersection[1][0]), self.intersection_radius))
 
@@ -41,13 +42,12 @@ class Playable:
     def __init__(self, animatable):
         self.animatable = animatable
         self.queues = {}
-        output = json.loads(os.popen(f"Rscript ../api/console.r --json '{json.dumps(animatable.animations)}'").read())
-        print(output)
-        for attribute in output[0]:
+        output = json.loads(os.popen(f"Rscript ../api/console.r --json '[{json.dumps(animatable.animations)}]'").read())
+        for attribute in output["objectPolynomials"][0]:
             animation = {
-                "operation": attribute["operation"],
-                "polynomial": attribute[f"polynomial{'polynomials' in attribute.keys()}"],
-                "duration": attribute["duration"]
+                "operation": attribute["operation"][0],
+                "polynomial": attribute[f"polynomial{'s' if ('polynomials' in attribute.keys()) else ''}"],
+                "duration": attribute["duration"][0]
             }
             if animation["operation"] not in self.queues.keys():
                 self.queues[animation["operation"]] = []
@@ -84,6 +84,7 @@ class Animatable:
         self.shape = shape
         self.original = shape
         self.window = window
+        self.shape.draw(window)
 
     def getX(self):
         return self.shape.getCenter().getX()
@@ -106,6 +107,7 @@ class Animatable:
         if (type(self.shape) == Circle):
             self.shape = Circle(self.shape.getCenter(), self.shape.getRadius() * multiplier)
             self.shape.draw(self.window)
+            self.window.update()
             return
         xdiff = self.getX_diff() * multiplier
         ydiff = self.getY_diff() * multiplier
@@ -124,9 +126,12 @@ class Animatable:
             self.shape = Rectangle(top_right, bottom_left)
 
         self.shape.draw(self.window)
+        self.window.update()
 
     def setXY(self, x, y):
+        print("changing posittion")
         self.shape.move(x - self.getX(), y - self.getY())
+        self.window.update()
 
     def animate(self, animations):
         for attribute in animations:
