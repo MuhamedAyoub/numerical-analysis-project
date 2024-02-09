@@ -6,10 +6,10 @@ from graphics import Circle, GraphWin, Oval, Point, Rectangle
 
 class Polynomial:
     def __init__(self, coefficients):
-        self.coeffiecient = coefficients
+        self.coeffiecients = coefficients
 
     def eval(self, value):
-        return sum([coeff * value for coeff in self.coeffiecient])
+        return sum([self.coeffiecients[i] * (value ** i) for i in range(len(self.coeffiecients))])
 
 class Animator:
     def __init__(self, playables, window):
@@ -80,11 +80,14 @@ class Playable:
 
 class Animatable:
     def __init__(self, shape: Circle | Oval | Rectangle, window: GraphWin) -> None:
-        self.step = 0.2
+        self.step = 0.025
         self.shape = shape
-        self.original = shape
+        self.original = shape.clone()
         self.window = window
-        self.shape.draw(window)
+
+    def draw(self):
+        self.shape.draw(self.window)
+        return self
 
     def getX(self):
         return self.shape.getCenter().getX()
@@ -103,35 +106,37 @@ class Animatable:
         return(abs(self.shape.getP1().getY() - self.shape.getP2().getY()))
 
     def setSize(self, multiplier):
-        self.shape.undraw()
+        new = Circle(Point(0, 0), 0)
         if (type(self.shape) == Circle):
-            self.shape = Circle(self.shape.getCenter(), self.shape.getRadius() * multiplier)
+            new = Circle(self.shape.getCenter(), self.original.getRadius() * multiplier)
+            self.shape.undraw()
+            self.shape = new
             self.shape.draw(self.window)
-            self.window.update()
             return
-        xdiff = self.getX_diff() * multiplier
-        ydiff = self.getY_diff() * multiplier
+
+        original = Animatable(self.original, self.window)
+        xdiff = original.getX_diff() * multiplier
+        ydiff = original.getY_diff() * multiplier
         top_right = Point(
-            self.shape.getCenter().getX() - xdiff / 2,
-            self.shape.getCenter().getY() + ydiff / 2
+            original.getX() - xdiff / 2,
+            original.getY() + ydiff / 2
         )
         bottom_left = Point(
-            self.shape.getCenter().getX() + xdiff / 2,
-            self.shape.getCenter().getY() - ydiff / 2
+            original.getX() + xdiff / 2,
+            original.getY() - ydiff / 2
         )
 
         if (type(self.shape) == Oval):
-            self.shape = Oval(top_right, bottom_left)
+            new = Oval(top_right, bottom_left)
         elif (type(self.shape == Rectangle)):
-            self.shape = Rectangle(top_right, bottom_left)
-
+            new = Rectangle(top_right, bottom_left)
+        
+        self.shape.undraw()
+        self.shape = new
         self.shape.draw(self.window)
-        self.window.update()
 
     def setXY(self, x, y):
-        print("changing posittion")
         self.shape.move(x - self.getX(), y - self.getY())
-        self.window.update()
 
     def animate(self, animations):
         for attribute in animations:
@@ -145,12 +150,13 @@ class Animatable:
                 if (attribute["points"][len(attribute["points"]) - 1][0] != 1):
                     raise ValueError("last keyframe should be at 100%")
             elif (attribute["operation"] == "position"):
-                if (len(attribute["points"]) == 2):
+                if (len(attribute["points"][0]) == 2):
                     attribute["points"] = [
                         [(i + 1) / len(attribute["points"]), *attribute["points"][i]] 
                         for i in range(len(attribute["points"]))
                     ]
-                    attribute["points"].unshift([0, self.getX(), self.getY()])
+                    print(attribute["points"])
+                    attribute["points"].insert(0, [0, self.getX(), self.getY()])
                 if (attribute["points"][len(attribute["points"]) - 1][0] != 1):
                     raise ValueError("last keyframe should be at 100%")
         self.animations = animations
