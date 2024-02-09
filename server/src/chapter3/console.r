@@ -15,4 +15,5 @@ for (v in strsplit(args[1], ";")) {
 base <- base[2:length(base[, 1]), ]
 
 result <- solvesys(base, vector, rep(0, length(vector)))
+print(result)
 print(paste(result$jacobi$result, collapse = ";"))

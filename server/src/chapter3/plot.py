@@ -34,6 +34,9 @@ cartisien = [[0 if (j == i) else 0 for j in range(len(vector))] for i in range(l
 output = os.popen(
     f"Rscript ./console.r '{';'.join(list(map(lambda row: ','.join(map(str, row)), base)))}' '{';'.join(map(str, vector))}'"
 ).read()
+print(output)
+output = output.split("\n")
+output = output[len(output) - 2]
 original = list(map(float, output[output.index('"'):].strip('"\n').split(";")))
 
 print(original)
