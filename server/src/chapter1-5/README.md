@@ -12,3 +12,8 @@ uses root finding algorithms (chapter 1) to find collision points
 ## How to use
 write the input to the program in a json file following the format in `query.json`, and input it to 
 `Rscript console.r [file name]`
+
+## Note
+included is a video of a program using the two methods to animate some objects and to determine collistions 
+between them
+to run install graphics.py and run animation/animate.py
