@@ -1,65 +1,49 @@
 
-# Gauusian Elimination with Total Pivoting
-gaussianEliminationTotalPivoting <- function(A, b) {
-    n <- nrow(A)
-
-    augmentedMatrix <- cbind(A, b)
-
-    # Applying Gaussian elimination with total pivoting
-    for (i in 1:(n - 1)) {
-        # Total Pivoting
-        pivotElement <- which.max(abs(augmentedMatrix[i:n, i:n]))
-        pivotRow <- floor((pivotElement - 1) / (n - i + 1)) + i
-        pivotCol <- pivotElement - (pivotRow - i) * (n - i + 1)
-
-        if (pivotRow != i) {
-            augmentedMatrix[c(i, pivotRow), ] <- augmentedMatrix[c(pivotRow, i), ]
-        }
-        if (pivotCol != i) {
-            augmentedMatrix[, c(i, pivotCol)] <- augmentedMatrix[, c(pivotCol, i)]
-        }
-
-        # Elimination
-        for (j in (i + 1):n) {
-            factor <- augmentedMatrix[j, i] / augmentedMatrix[i, i]
-            augmentedMatrix[j, ] <- augmentedMatrix[j, ] - factor * augmentedMatrix[i, ]
-        }
+gaussianEliminationTotalPivoting <- function(a_matrix, b_matrix) {
+    # Write be as a matrix of col 1
+    if (is.vector(b_matrix)) {
+        b_matrix <- matrix(b_matrix, ncol = 1)
     }
 
-    x <- numeric(n)
-    for (i in n:1) {
-        x[i] <- (augmentedMatrix[i, n + 1] - sum(augmentedMatrix[i, (i + 1):n] * x[(i + 1):n])) / augmentedMatrix[i, i]
-    }
+  if(ncol(a_matrix) != nrow(b_matrix)) {
+    stop("Error: rows in A is not equal to columns in B.\n")
+  } else if(ncol(b_matrix) != 1 || nrow(b_matrix) != nrow(a_matrix)) {
+    stop("Error: number of columns in B does not equal to one, or A is not square.\n")
+  }
 
-    return(x)
+  # Creating the augmented matrix
+  augmented_matrix <- cbind(a_matrix, b_matrix)
+
+  n <- nrow(b_matrix)  # Number of rows
+
+  for (i in 1:(n - 1)) {
+    if (augmented_matrix[i, i] == 0) {
+      stop("ERROR: null pivot number ", i, "\n")
+      break
+    } else {
+      for (j in (i + 1):n) {
+        if (augmented_matrix[j, i] != 0) {
+          scalability_factor <- augmented_matrix[j, i] / augmented_matrix[i, i]
+          for (k in 1:(n + 1)) {
+            augmented_matrix[j, k] <- augmented_matrix[j, k] - augmented_matrix[i, k] * scalability_factor
+          }
+        }
+      }
+    }
+  }
+
+
+  # Back substitution to calculate variables x1, x2, x3
+  variables <- rep(0, n)
+  for (i in n:1) {
+    variables[i] <- augmented_matrix[i, n + 1] / augmented_matrix[i, i]
+    for (j in (i - 1):1) {
+      augmented_matrix[j, n + 1] <- augmented_matrix[j, n + 1] - augmented_matrix[j, i] * variables[i]
+    }
+  }
+
+  return(variables)
 }
-
-gaussianEliminationPartialPivoting <- function(A, b) {
-    n <- nrow(A)
-
-    # Augmenting matrix [A|b]
-    augmentedMatrix <- cbind(A, b)
-
-    # Applying Gaussian elimination with partial pivoting
-    for (i in 1:(n - 1)) {
-        # Partial Pivoting
-        pivotRow <- which.max(abs(augmentedMatrix[i:n, i])) + (i - 1)
-        if (pivotRow != i) {
-            augmentedMatrix[c(i, pivotRow), ] <- augmentedMatrix[c(pivotRow, i), ]
-        }
-        for (j in (i + 1):n) {
-            factor <- augmentedMatrix[j, i] / augmentedMatrix[i, i]
-            augmentedMatrix[j, ] <- augmentedMatrix[j, ] - factor * augmentedMatrix[i, ]
-        }
-    }
-    x <- numeric(n)
-    for (i in n:1) {
-        x[i] <- (augmentedMatrix[i, n + 1] - sum(augmentedMatrix[i, (i + 1):n] * x[(i + 1):n])) / augmentedMatrix[i, i]
-    }
-
-    return(x)
-}
-
 
 luDecompositionSolve <- function(A, B) {
     n <- nrow(A)
@@ -105,10 +89,16 @@ luDecompositionSolve <- function(A, B) {
 
 
 
-
-
 choleskyDecompositionSolve <- function(A, B) {
   n <- nrow(A)
+  
+  # Check if A is square and positive definite
+  if (!all.equal(A, t(A))) {
+    stop("Matrix A must be symmetric.")
+  }
+  if (any(eigen(A, symmetric = TRUE)$values <= 0)) {
+    stop("Matrix A must be positive definite.")
+  }
   
   # Cholesky decomposition
   L <- matrix(0, n, n)
@@ -132,11 +122,69 @@ choleskyDecompositionSolve <- function(A, B) {
   
   # Lt x = y (back substitution)
   x <- numeric(n)
-  for (i in n:1) {
-    x[i] <- (y[i] - sum(L[i+1:n, i] * x[i+1:n])) / L[i, i]
+  for (i in n:1) {  # Iterate from n down to 1 to avoid out-of-bounds issue
+    if (i < n) {
+      x[i] <- (y[i] - sum(L[(i+1):n, i] * x[(i+1):n])) / L[i, i]
+    } else {
+      x[i] <- y[i] / L[i, i]
+    }
   }
   
   return(x)
 }
+gaussianEliminationPartialPivoting <- function(a_matrix, b_matrix) {
+  n <- nrow(a_matrix)
+  augmented_matrix <- cbind(a_matrix, b_matrix)
 
+  # Partial pivoting
+  for (k in 1:(n - 1)) {
+    max_index <- which.max(abs(augmented_matrix[k:n, k])) + k - 1
+    augmented_matrix[c(k, max_index), ] <- augmented_matrix[c(max_index, k), ]
 
+    if (augmented_matrix[k, k] == 0) {
+      cat("IMPOSSIBLE: ", k, "-th pivot is zero. System may have no unique solution.\n")
+      return(invisible())
+    }
+
+    # Forward elimination
+    for (i in (k + 1):n) {
+      scaling_factor <- augmented_matrix[i, k] / augmented_matrix[k, k]
+      augmented_matrix[i, (k:n) + 1] <- augmented_matrix[i, (k:n) + 1] - scaling_factor * augmented_matrix[k, (k:n) + 1]
+    }
+  }
+
+  cat("After forward elimination:\n")
+  print(augmented_matrix)
+  cat("\n")
+
+  # Back-substitution
+  x <- numeric(n)
+  for (i in n:1) {
+    x[i] <- augmented_matrix[i, n + 1] / augmented_matrix[i, i]
+    augmented_matrix[1:(i - 1), n + 1] <- augmented_matrix[1:(i - 1), n + 1] - augmented_matrix[1:(i - 1), i] * x[i]
+  }
+
+    return(x)
+}
+
+# Test the Algorithms on the console
+A <- matrix(c(4, 12, -16, 12, 37, -43, -16, -43, 98), 3, 3)
+B <- c(1, 2, 3)
+print(gaussianEliminationTotalPivoting(a_matrix = A, b_matrix = B))
+
+# print(luDecompositionSolve(A, B))
+# print(choleskyDecompositionSolve(A, B))
+
+## Defining the controller for the Chapter2 api
+
+Ch2Controller <- function(A,B,selected_method) {
+    if (selected_method == "Gauss") {
+        gaussianEliminationPartialPivoting(a_matrix = A,b_matrix = B)
+    } else if (selected_method == "LU") {
+         luDecompositionSolve(A,B)
+    } else if (selected_method == "Cholesky") {
+        choleskyDecompositionSolve(A,B)
+    } else {
+        list(status="error", msg="Method not found")
+    }
+}

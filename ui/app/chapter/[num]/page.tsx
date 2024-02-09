@@ -3,11 +3,11 @@ import SecondChapter from '@/components/chapters/second';
 import SixthChapter from '@/components/chapters/sixth'
 type Props = {
 	params: {
-		chapter: string;
+		num: string;
 	};
 };
-export default function ChapterPage({ params: { chapter } }: Props) {
-	switch (chapter) {
+export default function ChapterPage({ params: { num } }: Props) {
+	switch (num) {
 		case '1':
 			return <h1>Chapter 1</h1>;
 		case '2':

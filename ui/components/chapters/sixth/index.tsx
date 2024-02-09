@@ -1,4 +1,3 @@
-"use server"
 
 import { SERVER_HOST } from "@/config/http";
 import styles from "@/components/chapters/sixth/styles.module.css";
