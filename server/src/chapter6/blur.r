@@ -44,14 +44,8 @@ blur <- function(image, sigma) {
   simple_trapezoids <- image_convolve(image, kernels$simple_trapezoids)
   simpson <- image_convolve(image, kernels$simpson)
   simple_simpson <- image_convolve(image, kernels$simple_simpson)
-  image_write(trapezoids, "./sample/trapezoids-tmp.jpg")
-  image_write(simple_trapezoids, "./sample/simple_trapezoids-tmp.jpg")
-  image_write(simpson, "./sample/simpson-tmp.jpg")
-  image_write(simple_simpson, "./sample/simple_simpson-tmp.jpg")
-  return(
-    # trapezoids = jpeg("./sample/trapezoids-tmp.jpg"),
-    # simple_trapezoids = jpeg("./sample/simple_trapezoids-tmp.jpg"),
-    # simpson = jpeg("./sample/simpson-tmp.jpg"),
-    readBin("./sample/simple_simpson-tmp.jpg", "raw")
-  )
+  image_write(trapezoids, "./sample/trapezoids.jpg")
+  image_write(simple_trapezoids, "./sample/simple_trapezoids.jpg")
+  image_write(simpson, "./sample/simpson.jpg")
+  image_write(simple_simpson, "./sample/simple_simpson.jpg")
 }

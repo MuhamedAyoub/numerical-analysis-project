@@ -289,7 +289,7 @@ interpolate <- function(attribute, points) {
   )
 }
 
-source("./root.r")
+source(sprintf("%s/../logic/root.r", getwd()))
 
 prepare <- function(points, duration) {
   duration <- as.numeric(duration)
@@ -312,32 +312,53 @@ tomatrix <- function(points_list) {
 }
 
 middle <- function(obj) {
-  polynomials <- list()
+  objectpolys <- list()
   paths <- list()
   for (object in obj) {
+    polynomials <- list()
     for (attribute in object) {
       if (is.null(attribute$duration) || attribute$duration == 0) {
         next
       }
       attribute$points <- t(tomatrix(attribute$points))
-      if (attribute$attribute != "position") {
+      if (attribute$operation != "position") {
         points <- prepare(attribute$points, attribute$duration)
         polynomials <- append(
           polynomials,
-          list(interpolate(attribute$attribute, points))
+          list(
+            append(
+              interpolate(attribute$operation, points),
+              list(duration = attribute$duration)
+            )
+          )
         )
         next
       }
+      position <- list(
+        operation = "position",
+        duration = attribute$duration,
+        polynomials = list(),
+        outputs = list()
+      )
 
       xpoints <- prepare(
         rbind(attribute$points[1, ], attribute$points[2, ]),
         attribute$duration
       )
       xresult <- interpolate("x", xpoints)
-      points <- append(
-        polynomials,
-        list(xresult)
+      position$polynomials <- append(
+        position$polynomials,
+        list(
+          x = xresult$polynomial
+        )
       )
+      position$outputs <- append(
+        position$outputs,
+        list(
+          x = xresult$output
+        )
+      )
+
       xpolynomial <- xresult$polynomial
 
       ypoints <- prepare(
@@ -345,11 +366,19 @@ middle <- function(obj) {
         attribute$duration
       )
       yresult <- interpolate("y", ypoints)
-
-      polynomials <- append(
-        polynomials,
-        list(yresult)
+      position$polynomials <- append(
+        position$polynomials,
+        list(
+          y = yresult$polynomial
+        )
       )
+      position$outputs <- append(
+        position$outputs,
+        list(
+          y = yresult$output
+        )
+      )
+
       ypolynomial <- yresult$polynomial
       paths <- append(
         paths,
@@ -368,18 +397,21 @@ middle <- function(obj) {
           )
         )
       )
+      polynomials <- append(
+        polynomials,
+        list(
+          position
+        )
+      )
     }
+    objectpolys <- append(
+      objectpolys,
+      list(polynomials)
+    )
   }
-
-  if (length(paths) == 0 || length(paths) == 1) {
-    return(list(
-      polynomials = polynomials,
-      intersections = list()
-    ))
-  }
-
   return(list(
-    polynomials = polynomials,
-    intersections = intersections(paths)
+    objectPolynomials = objectpolys,
+    intersections = if (length(paths) == 0 || length(paths) == 1) list()
+    else intersections(paths)
   ))
 }

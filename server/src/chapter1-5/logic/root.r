@@ -1,4 +1,4 @@
-wait_time <- 40
+wait_time <- 20
 
 find_interval <- function(f, a, b) {
   upper <- b
@@ -309,7 +309,10 @@ subset <- function(set1, set2) {
 
 intersections <- function(paths) {
   if (length(paths) == 0 || length(paths) == 1) {
-    return(list())
+    return(list(
+      coords = list(),
+      output = list()
+    ))
   }
   outputs <- list()
   points <- c(NULL)

@@ -20,3 +20,6 @@ After computation the obtained values (`Xi`) are normalized by dividing them by 
 __Xi / sum(Xi)__ the output is then stored in the __kernel__. The new pixel value is obtained by summing 
 the product of surrounding pixels by their respective weights (pixel[1, 1] * kernel[1, 1]).
 
+## Note
+run `Rscript console.r [image path] [sigma value ([0, 2])]` to use it
+output in sample folder

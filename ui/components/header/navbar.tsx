@@ -35,6 +35,21 @@ const components: { title: string; href: string; description: string }[] = [
 		href: '/chapter/4',
 		description: 'This is chapter 4',
 	},
+	{
+		title: 'Chapter 5',
+		href: '/chapter/5',
+		description: 'This is chapter 5',
+	},
+	{
+		title: 'Chapter 6',
+		href: '/chapter/6',
+		description: 'This is chapter 6',
+	},
+	{
+		title: 'Chapter 7',
+		href: '/chapter/7',
+		description: 'This is chapter 7',
+	},
 ];
 
 export function CNavigationMenu() {
@@ -42,7 +57,7 @@ export function CNavigationMenu() {
 		<NavigationMenu>
 			<NavigationMenuList>
 				<NavigationMenuItem>
-					<Link href="/docs" legacyBehavior passHref>
+					<Link href="/" legacyBehavior passHref>
 						<NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
 							/
 						</NavigationMenuLink>
