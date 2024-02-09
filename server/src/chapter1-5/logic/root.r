@@ -1,4 +1,4 @@
-wait_time <- 40
+wait_time <- 20
 
 find_interval <- function(f, a, b) {
   upper <- b

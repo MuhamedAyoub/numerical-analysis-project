@@ -27,13 +27,13 @@ class Message:
 
 class Animator:
     def __init__(self, playables, window):
-        self.intersection_color = color_rgb(128, 15, 240)
-        self.intersection_radius = 5
+        self.collision_color = color_rgb(128, 15, 240)
+        self.collision_radius = 5
         self.window = window
         self.playables = playables
-        self.update_intersections()
+        self.update_collisions()
 
-    def update_intersections(self):
+    def update_collisions(self):
         animations = []
         for playable in self.playables:
             animation = playable.get_first_position_animation()
@@ -50,23 +50,23 @@ class Animator:
                         "end": animation["duration"]
                     },
                 })
-        self.intersections = []
+        self.collisions = []
         if (len(animations) > 0):
 
-            message = Message("processing intersections...", self.window)
+            message = Message("processing collisions...", self.window)
             out = os.popen(f"Rscript ../api/root.r --json '{json.dumps(animations)}'").read()
-            intersections = json.loads(out)
+            collisions = json.loads(out)
             print(out)
             message.destroy()
 
-            for intersection in intersections:
-                circle = Circle(Point(intersection[0][0], intersection[1][0]), self.intersection_radius)
-                circle.setFill(self.intersection_color)
-                self.intersections.append(circle)
+            for collision in collisions:
+                circle = Circle(Point(collision[0][0], collision[1][0]), self.collision_radius)
+                circle.setFill(self.collision_color)
+                self.collisions.append(circle)
 
     async def play(self):
-        for intersection in self.intersections:
-            intersection.draw(self.window)
+        for collision in self.collisions:
+            collision.draw(self.window)
         animations = []
         for playable in self.playables:
             animations.append(playable.play())

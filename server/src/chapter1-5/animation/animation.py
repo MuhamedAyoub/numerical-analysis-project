@@ -1,18 +1,19 @@
 import asyncio
 from graphics import Rectangle, Point, Circle, Oval, GraphWin
-import objects
+import logic
 
 # coordinates start at top left
 window = GraphWin("Animation", 700, 700, autoflush=True)
 window.setBackground("black")
+input("> ")
 
-r = objects.Animatable(Rectangle(Point(-30, -30), Point(30, 30)), window, "blue").draw()
-c = objects.Animatable(Circle(Point(50, 600), 60), window, "red").draw()
-o = objects.Animatable(Oval(Point(640, 575), Point(660, 625)), window, "red").draw()
-csize = objects.Animatable(Circle(Point(350, 500), 50), window, "purple").draw()
+r = logic.Animatable(Rectangle(Point(-30, -30), Point(30, 30)), window, "blue").draw()
+c = logic.Animatable(Circle(Point(50, 600), 60), window, "red").draw()
+o = logic.Animatable(Oval(Point(640, 575), Point(660, 625)), window, "magenta").draw()
+csize = logic.Animatable(Circle(Point(350, 500), 50), window, "purple").draw()
 
 asyncio.run(
-    objects.Animator([
+    logic.Animator([
         r.animate([
             {
                 "operation": "position",
