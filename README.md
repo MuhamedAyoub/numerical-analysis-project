@@ -1,46 +1,42 @@
-<<<<<<< HEAD
-# description
-a mini project for the analyse numérique subject
+## About
+A project for Analyse Numérique, contains sample use cases of algorithms studied in the course 
 
-# setup
-follow [this guide by freecodecamp](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/).
+- __Chapter 1__: root finding algorithms (newton-raphson, dichotomie, point milieu)
+    __Used For__: Detection of collisions between objects
+- __Chapter 2__: Solving Linear Systems of Equations (lu, gauss, cholesky)
+- __Chapter 3__: Solving Lineas Systems Of Equations (Numeric) (jacobi, gauss-seidel, relaxation)
+    __Used For__: Finding the origin of a given vector can be applied in reversing the orientation of an image
+- __Chapter 4__: Finding Eigen Values(puissance itérée, déflation, jacobi et rotation de givens)
+    __Used For__: Image compression
+- __Chapter 5__: interpolation (lagrange, différences divisés, différences finis)
+    __Used For__: Creating smooth animations from keyframes
+- __Chapter 6__: numerical integration (trapézes, simpson, trapézes composites, simpson composites)
+    __Used For__: Image blurring
 
-run `pip install -r requirements.txt` after creating the virtual environment.
-=======
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Note
+- Chapter 1 and 5 are put into one project as they are both utilized
+- the source code of the algorithms is located under `server/src`
 
-## Getting Started
+## Dependencies
+### R
+install `plumber`, `magick`
+### Python
+run `pip install -r requirements.py.txt` located on each folder
+make sure to install `numpy` and `matplotlib` using `pip install numpy matplotlib`
+### Website
+run `npm install` on the root folder
 
-First, run the development server:
+## How to execute
+### Starting web site
+run `npm run dev` and visit the website at the specified address
+Chapter 2 is on the Web site
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Python Scripts
+for Chapter 1-5 run in the `animation` folder `python animaton.py`
+for Chapter 3 run `plot.py` after setting the input in input.json if you prefer, else input the data after running the script
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### R scripts
+for Chapter 6 run `Rscript console.r [image path] [sigma (default = 1)]`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
->>>>>>> ui
+## Samples
+sample are provided with each chapter's code for ease of viewing
