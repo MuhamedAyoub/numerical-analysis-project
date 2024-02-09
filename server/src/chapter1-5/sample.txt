@@ -1,0 +1,429 @@
+
+[[1]]
+[[1]]$x
+[[1]]$x$coefficients
+                         
+-1.0  0.1  0.0  0.0  0.0 
+
+[[1]]$x$start
+[1] 0
+
+[[1]]$x$end
+[1] 20
+
+
+[[1]]$y
+[[1]]$y$coefficients
+                         
+ 1.0 -0.1  0.0  0.0  0.0 
+
+[[1]]$y$start
+[1] 0
+
+[[1]]$y$end
+[1] 20
+
+
+
+[[2]]
+[[2]]$x
+[[2]]$x$coefficients
+[1] 0
+
+[[2]]$x$start
+[1] 0
+
+[[2]]$x$end
+[1] 20
+
+
+[[2]]$y
+[[2]]$y$coefficients
+                         
+ 1.0 -0.1  0.0  0.0  0.0 
+
+[[2]]$y$start
+[1] 0
+
+[[2]]$y$end
+[1] 20
+
+
+
+$polynomials
+$polynomials[[1]]
+$polynomials[[1]]$operation
+[1] "size"
+
+$polynomials[[1]]$polynomial
+                                                            
+ 1.00000000 -0.12388889  0.58088889 -0.29944444  0.04244444 
+
+$polynomials[[1]]$output
+$polynomials[[1]]$output$lagrange
+$polynomials[[1]]$output$lagrange$result
+[1] "1 + -0.12388888888889X + 0.58088888888889X^2 + -0.299444444444445X^3 + 0.0424444444444445X^4"
+
+$polynomials[[1]]$output$lagrange$time
+[1] 0.06128764
+
+$polynomials[[1]]$output$lagrange$output
+[1] "l1(x) = 1 + -1.85X + 1.08X^2 + -0.25X^3 + 0.02X^4"                                                
+[2] "l2(x) = 2.77777777777778X + -2.36111111111111X^2 + 0.638888888888889X^3 + -0.0555555555555556X^4" 
+[3] "l3(x) = -1.42222222222222X + 2.06222222222222X^2 + -0.711111111111111X^3 + 0.0711111111111111X^4" 
+[4] "l4(x) = 0.694444444444444X + -1.11111111111111X^2 + 0.472222222222222X^3 + -0.0555555555555556X^4"
+[5] "l5(x) = -0.2X + 0.33X^2 + -0.15X^3 + 0.02X^4"                                                     
+
+
+$polynomials[[1]]$output$divided_diff
+$polynomials[[1]]$output$divided_diff$result
+[1] "1 + -0.123888888888889X + 0.580888888888889X^2 + -0.299444444444444X^3 + 0.0424444444444445X^4"
+
+$polynomials[[1]]$output$divided_diff$time
+[1] 0.00755477
+
+$polynomials[[1]]$output$divided_diff$output
+                     column               column               
+header "x"   "f[x0]" "f[x0, x1]"          "f[x0, x1, x2]"      
+       "0"   "1"     "0"                  "0"                  
+       "1"   "1.2"   "0.2"                "0"                  
+column "2.5" "1.3"   "0.0666666666666667" "-0.0533333333333333"
+column "4"   "1.5"   "0.133333333333333"  "0.0222222222222222" 
+column "5"   "4"     "2.5"                "0.946666666666667"  
+       column               column                 
+header "f[x0, x1, x2, x3]"  "f[x0, x1, x2, x3, x4]"
+       "0"                  "0"                    
+       "0"                  "0"                    
+column "0"                  "0"                    
+column "0.0188888888888889" "0"                    
+column "0.231111111111111"  "0.0424444444444445"   
+
+
+$polynomials[[1]]$output$finite_diff
+$polynomials[[1]]$output$finite_diff$error
+[1] "points are not equidistant"
+
+
+$polynomials[[1]]$output$fintite_diff
+$polynomials[[1]]$output$fintite_diff$result
+[1] ""
+
+
+
+
+$polynomials[[2]]
+$polynomials[[2]]$operation
+[1] "rotation"
+
+$polynomials[[2]]$polynomial
+[1]   0.0000000 -10.6666667   7.2000000  -0.5333333
+
+$polynomials[[2]]$output
+$polynomials[[2]]$output$lagrange
+$polynomials[[2]]$output$lagrange$result
+[1] "-10.6666666666667X + 7.2X^2 + -0.533333333333333X^3"
+
+$polynomials[[2]]$output$lagrange$time
+[1] 0.0005435944
+
+$polynomials[[2]]$output$lagrange$output
+[1] "l1(x) = 1 + -0.7X + 0.14X^2 + -0.008X^3"                        
+[2] "l2(x) = 1.06666666666667X + -0.32X^2 + 0.0213333333333333X^3"   
+[3] "l3(x) = -0.4X + 0.2X^2 + -0.016X^3"                             
+[4] "l4(x) = 0.0333333333333333X + -0.02X^2 + 0.00266666666666667X^3"
+
+
+$polynomials[[2]]$output$divided_diff
+$polynomials[[2]]$output$divided_diff$result
+[1] "-10.6666666666667X + 7.2X^2 + -0.533333333333333X^3"
+
+$polynomials[[2]]$output$divided_diff$time
+[1] 0.0004286766
+
+$polynomials[[2]]$output$divided_diff$output
+                     column      column              column              
+header "x"   "f[x0]" "f[x0, x1]" "f[x0, x1, x2]"     "f[x0, x1, x2, x3]" 
+       "0"   "0"     "0"         "0"                 "0"                 
+       "2.5" "10"    "4"         "0"                 "0"                 
+column "5"   "60"    "20"        "3.2"               "0"                 
+column "10"  "80"    "4"         "-2.13333333333333" "-0.533333333333333"
+
+
+$polynomials[[2]]$output$finite_diff
+$polynomials[[2]]$output$finite_diff$error
+[1] "points are not equidistant"
+
+
+$polynomials[[2]]$output$fintite_diff
+$polynomials[[2]]$output$fintite_diff$result
+[1] ""
+
+
+
+
+$polynomials[[3]]
+$polynomials[[3]]$operation
+[1] "y"
+
+$polynomials[[3]]$polynomial
+                         
+ 1.0 -0.1  0.0  0.0  0.0 
+
+$polynomials[[3]]$output
+$polynomials[[3]]$output$lagrange
+$polynomials[[3]]$output$lagrange$result
+[1] "1 + -0.1X"
+
+$polynomials[[3]]$output$lagrange$time
+[1] 0.000772953
+
+$polynomials[[3]]$output$lagrange$output
+[1] "l1(x) = 1 + -0.416666666666667X + 0.0583333333333333X^2 + -0.00333333333333333X^3 + 6.66666666666667e-05X^4"
+[2] "l2(x) = 0.8X + -0.173333333333333X^2 + 0.012X^3 + -0.000266666666666667X^4"                                 
+[3] "l3(x) = -0.6X + 0.19X^2 + -0.016X^3 + 4e-04X^4"                                                             
+[4] "l4(x) = 0.266666666666667X + -0.0933333333333333X^2 + 0.00933333333333333X^3 + -0.000266666666666667X^4"    
+[5] "l5(x) = -0.05X + 0.0183333333333333X^2 + -0.002X^3 + 6.66666666666667e-05X^4"                               
+
+
+$polynomials[[3]]$output$divided_diff
+$polynomials[[3]]$output$divided_diff$result
+[1] "1 + -0.1X"
+
+$polynomials[[3]]$output$divided_diff$time
+[1] 0.0005643368
+
+$polynomials[[3]]$output$divided_diff$output
+                    column      column          column             
+header "x"  "f[x0]" "f[x0, x1]" "f[x0, x1, x2]" "f[x0, x1, x2, x3]"
+       "0"  "1"     "0"         "0"             "0"                
+       "5"  "0.5"   "-0.1"      "0"             "0"                
+column "10" "0"     "-0.1"      "0"             "0"                
+column "15" "-0.5"  "-0.1"      "0"             "0"                
+column "20" "-1"    "-0.1"      "0"             "0"                
+       column                 
+header "f[x0, x1, x2, x3, x4]"
+       "0"                    
+       "0"                    
+column "0"                    
+column "0"                    
+column "0"                    
+
+
+$polynomials[[3]]$output$finite_diff
+$polynomials[[3]]$output$finite_diff$result
+                         
+ 1.0 -0.1  0.0  0.0  0.0 
+
+$polynomials[[3]]$output$finite_diff$time
+[1] 0.0005702972
+
+$polynomials[[3]]$output$finite_diff$output
+                    column      column          column             
+header "x"  "f[x0]" "f[x0, x1]" "f[x0, x1, x2]" "f[x0, x1, x2, x3]"
+       "0"  "1"     "0"         "0"             "0"                
+       "5"  "0.5"   "-0.5"      "0"             "0"                
+column "10" "0"     "-0.5"      "0"             "0"                
+column "15" "-0.5"  "-0.5"      "0"             "0"                
+column "20" "-1"    "-0.5"      "0"             "0"                
+       column                 
+header "f[x0, x1, x2, x3, x4]"
+       "0"                    
+       "0"                    
+column "0"                    
+column "0"                    
+column "0"                    
+
+
+$polynomials[[3]]$output$fintite_diff
+$polynomials[[3]]$output$fintite_diff$result
+[1] ""
+
+
+
+
+$polynomials[[4]]
+$polynomials[[4]]$operation
+[1] "y"
+
+$polynomials[[4]]$polynomial
+                         
+ 1.0 -0.1  0.0  0.0  0.0 
+
+$polynomials[[4]]$output
+$polynomials[[4]]$output$lagrange
+$polynomials[[4]]$output$lagrange$result
+[1] "1 + -0.1X"
+
+$polynomials[[4]]$output$lagrange$time
+[1] 0.0007538795
+
+$polynomials[[4]]$output$lagrange$output
+[1] "l1(x) = 1 + -0.416666666666667X + 0.0583333333333333X^2 + -0.00333333333333333X^3 + 6.66666666666667e-05X^4"
+[2] "l2(x) = 0.8X + -0.173333333333333X^2 + 0.012X^3 + -0.000266666666666667X^4"                                 
+[3] "l3(x) = -0.6X + 0.19X^2 + -0.016X^3 + 4e-04X^4"                                                             
+[4] "l4(x) = 0.266666666666667X + -0.0933333333333333X^2 + 0.00933333333333333X^3 + -0.000266666666666667X^4"    
+[5] "l5(x) = -0.05X + 0.0183333333333333X^2 + -0.002X^3 + 6.66666666666667e-05X^4"                               
+
+
+$polynomials[[4]]$output$divided_diff
+$polynomials[[4]]$output$divided_diff$result
+[1] "1 + -0.1X"
+
+$polynomials[[4]]$output$divided_diff$time
+[1] 0.0005407333
+
+$polynomials[[4]]$output$divided_diff$output
+                    column      column          column             
+header "x"  "f[x0]" "f[x0, x1]" "f[x0, x1, x2]" "f[x0, x1, x2, x3]"
+       "0"  "1"     "0"         "0"             "0"                
+       "5"  "0.5"   "-0.1"      "0"             "0"                
+column "10" "0"     "-0.1"      "0"             "0"                
+column "15" "-0.5"  "-0.1"      "0"             "0"                
+column "20" "-1"    "-0.1"      "0"             "0"                
+       column                 
+header "f[x0, x1, x2, x3, x4]"
+       "0"                    
+       "0"                    
+column "0"                    
+column "0"                    
+column "0"                    
+
+
+$polynomials[[4]]$output$finite_diff
+$polynomials[[4]]$output$finite_diff$result
+                         
+ 1.0 -0.1  0.0  0.0  0.0 
+
+$polynomials[[4]]$output$finite_diff$time
+[1] 0.0005676746
+
+$polynomials[[4]]$output$finite_diff$output
+                    column      column          column             
+header "x"  "f[x0]" "f[x0, x1]" "f[x0, x1, x2]" "f[x0, x1, x2, x3]"
+       "0"  "1"     "0"         "0"             "0"                
+       "5"  "0.5"   "-0.5"      "0"             "0"                
+column "10" "0"     "-0.5"      "0"             "0"                
+column "15" "-0.5"  "-0.5"      "0"             "0"                
+column "20" "-1"    "-0.5"      "0"             "0"                
+       column                 
+header "f[x0, x1, x2, x3, x4]"
+       "0"                    
+       "0"                    
+column "0"                    
+column "0"                    
+column "0"                    
+
+
+$polynomials[[4]]$output$fintite_diff
+$polynomials[[4]]$output$fintite_diff$result
+[1] ""
+
+
+
+
+
+$intersections
+$intersections$coords
+     [,1] [,2]
+[1,] 0    0   
+[2,] 0    0   
+
+$intersections$output
+$intersections$output[[1]]
+$intersections$output[[1]]$operation
+[1] "paths 1-2"
+
+$intersections$output[[1]]$x
+$intersections$output[[1]]$x[[1]]
+$intersections$output[[1]]$x[[1]]$method
+[1] "bisection"
+
+$intersections$output[[1]]$x[[1]]$result
+[1] 10
+
+$intersections$output[[1]]$x[[1]]$time
+[1] 0
+
+$intersections$output[[1]]$x[[1]]$iterations
+[1] 0
+
+$intersections$output[[1]]$x[[1]]$output
+       [,1] [,2] [,3] [,4]   [,5]   [,6]  
+output "a"  "b"  "x"  "f(a)" "f(b)" "f(x)"
+       "0"  "20" "10" "-"    "+"    "-"   
+
+
+$intersections$output[[1]]$x[[2]]
+$intersections$output[[1]]$x[[2]]$method
+[1] "newton"
+
+$intersections$output[[1]]$x[[2]]$error
+[1] "newton method diverges"
+
+
+$intersections$output[[1]]$x[[3]]
+$intersections$output[[1]]$x[[3]]$method
+[1] "fixed point"
+
+$intersections$output[[1]]$x[[3]]$output
+                                        
+       "Xn"  "|Xn - X(n-1)| < tolerance"
+result "-10" "NULL"                     
+       "10"  "FALSE"                    
+       "10"  "TRUE"                     
+
+$intersections$output[[1]]$x[[3]]$time
+[1] 0.01463962
+
+$intersections$output[[1]]$x[[3]]$iterations
+[1] 2
+
+$intersections$output[[1]]$x[[3]]$result
+   
+10 
+
+
+
+$intersections$output[[1]]$y
+$intersections$output[[1]]$y[[1]]
+$intersections$output[[1]]$y[[1]]$method
+[1] "bisection"
+
+$intersections$output[[1]]$y[[1]]$result
+[1] 0
+
+$intersections$output[[1]]$y[[1]]$time
+[1] 0
+
+$intersections$output[[1]]$y[[1]]$iterations
+[1] 0
+
+$intersections$output[[1]]$y[[1]]$output
+       [,1] [,2] [,3] [,4]   [,5]   [,6]  
+output "a"  "b"  "x"  "f(a)" "f(b)" "f(x)"
+       "0"  "20" "10" "-"    "-"    "-"   
+
+
+$intersections$output[[1]]$y[[2]]
+$intersections$output[[1]]$y[[2]]$method
+[1] "newton"
+
+$intersections$output[[1]]$y[[2]]$error
+[1] "cannot use newton method, derivitive is zero"
+
+
+$intersections$output[[1]]$y[[3]]
+$intersections$output[[1]]$y[[3]]$method
+[1] "fixed point"
+
+$intersections$output[[1]]$y[[3]]$output
+[1] ""
+
+$intersections$output[[1]]$y[[3]]$time
+[1] 0
+
+$intersections$output[[1]]$y[[3]]$result
+[1] 0
+
+$intersections$output[[1]]$y[[3]]$iterations
+[1] 0

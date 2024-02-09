@@ -19,24 +19,22 @@ mul <- function(p, q) {
 
 sum <- function(p, q) {
   if (length(p) == length(q)) {
-    return(p + q)
+    result <- p + q
+    result <- result[1:Position(function(x) x != 0.0, result, right = TRUE)]
+    return(if (length(result[result == 0]) == length(result)) c(0) else result)
   }
 
-  if (length(p) > length(q)) {
-    bigger <- p
-    smaller <- q
-  } else {
-    bigger <- q
-    smaller <- p
-  }
-
-  result <- bigger[seq(1, length(smaller))] + smaller
-  result <- c(result, bigger[seq(length(smaller) + 1, length(bigger))])
-
-  return(result)
+  min_length <- min(length(p), length(q))
+  result <- c(
+    p[seq_len(min_length)] + q[seq_len(min_length)],
+    if (length(p) != min_length) p[(min_length + 1):length(p)] else NULL,
+    if (length(q) != min_length) q[(min_length + 1):length(q)] else NULL
+  )
+  result <- result[1:Position(function(x) x != 0.0, result, right = TRUE)]
+  return(if (length(result[result == 0]) == length(result)) c(0) else result)
 }
 
-stringify <- function(coefficients) {
+pretty <- function(coefficients) {
   i <- 0
   coefficients <- Filter(
     function(x) return(x != ""),
@@ -63,18 +61,10 @@ stringify <- function(coefficients) {
   return(paste(coefficients, collapse = " + "))
 }
 
-multiply <- function(...) {
-  result <- c(1)
-  for (i in seq_len(...length())) {
-    result <- mul(result, ...elt(i))
-  }
-  return(result)
-}
-
 lagrange <- function(points) {
-  print("                              Lagrange Method")
   points <- ord(points)
   result <- c(NULL)
+  output <- c(NULL)
   time <- 0
   for (i in seq_len(length(points[1, ]))) {
     stime <- Sys.time()
@@ -88,16 +78,20 @@ lagrange <- function(points) {
       }
     }
     time <- time + (Sys.time() - stime)
-    print(sprintf("l%g(x) = %s", i, stringify(weight)))
+    output <- c(output, sprintf("l%g(x) = %s", i, pretty(weight)))
     stime <- Sys.time()
     result <- sum(result, weight * points[2, i])
     time <- time + (Sys.time() - stime)
   }
-  result <- list(result = result, time = time)
+  result <- list(
+    result = result,
+    time = as.numeric(time),
+    output = output
+  )
   return(result)
 }
 
-newton <- function(points) {
+newton_algo <- function(points) {
   points <- ord(points)
   execution <- matrix(c(points[2, ]), nrow = length(points[1, ]))
   header <- c("x", "f[x0]")
@@ -139,12 +133,14 @@ newton <- function(points) {
     execution <- cbind(execution, column)
   }
 
-  print("                               Newton Algorithm")
   execution <- cbind(points[1, ], execution)
   execution <- rbind(header, execution)
-  print(execution)
 
-  result <- list(result = result, time = time)
+  result <- list(
+    result = result,
+    time = as.numeric(time),
+    output = execution
+  )
   return(result)
 }
 
@@ -189,12 +185,14 @@ fdf <- function(points) {
     execution <- cbind(execution, column)
   }
 
-  print("                               FDF Algorithm")
   execution <- cbind(points[1, ], execution)
   execution <- rbind(header, execution)
-  print(execution)
 
-  result <- list(result = result, time = time)
+  result <- list(
+    result = result,
+    time = as.numeric(time),
+    output = execution
+  )
   return(result)
 }
 
@@ -203,9 +201,10 @@ divided_diff <- function(points) {
   points <- ord(points)
   time <- Sys.time() - stime
 
-  result <- newton(points)
+  result <- newton_algo(points)
   coefficients <- result$result
   time <- time + result$time
+  output <- result$output
   poly <- c(1)
   result <- c(0)
 
@@ -218,7 +217,11 @@ divided_diff <- function(points) {
   }
   time <- time + (Sys.time() - stime)
 
-  result <- list(result = result, time = time)
+  result <- list(
+    result = result,
+    time = as.numeric(time),
+    output = output
+  )
   return(result)
 }
 
@@ -229,8 +232,9 @@ finite_diff <- function(points) {
   h <- abs(a - points[1, length(points[1, ])]) / (length(points[1, ]) - 1)
   for (i in 2:length(points[1, ])) {
     if (a + (i - 1) * h != points[1, i]) {
-      print("points are not equidistant")
-      return(list(result = NULL, time = 0))
+      return(list(
+        error = "points are not equidistant"
+      ))
     }
   }
   time <- Sys.time() - stime
@@ -238,6 +242,7 @@ finite_diff <- function(points) {
   result <- fdf(points)
   coefficients <- result$result
   time <- time + result$time
+  output <- result$output
   poly <- c(1)
   result <- c(0)
 
@@ -253,33 +258,128 @@ finite_diff <- function(points) {
   }
   time <- time + (Sys.time() - stime)
 
-  result <- list(result = result, time = time)
+  result <- list(
+    result = result,
+    time = as.numeric(time),
+    output = output
+  )
   return(result)
 }
 
-interpolate <- function(points) {
+interpolate <- function(attribute, points) {
   result <- list(
-    "lagrange" = lagrange(points),
-    "divided_diff" = divided_diff(points),
-    "finite_diff" = finite_diff(points)
+    lagrange = lagrange(points),
+    divided_diff = divided_diff(points),
+    finite_diff = finite_diff(points)
   )
 
-  print("                               TIME")
-  print(sprintf("lagrange: %g", result$lagrange$time))
-  print(sprintf("divided differences: %g", result$divided_diff$time))
-  print(sprintf("finite differences: %g", result$finite_diff$time))
+  polynomial <- result$divided_diff$result
+  result$lagrange$result <- pretty(result$lagrange$result)
+  result$divided_diff$result <- pretty(result$divided_diff$result)
+  result$fintite_diff$result <- pretty(result$fintite_diff$result)
 
-  return(result$divided_diff$result)
+  result <- append(
+    list(
+      operation = attribute,
+      polynomial = polynomial
+    ),
+    list(
+      output = result
+    )
+  )
 }
 
-# points should b x0,y0;x1,y1;...
-args <- commandArgs(trailingOnly = TRUE)
+source("./root.r")
 
-points <- matrix(c(1, 1), nrow = 2)
-for (point in strsplit(args[1], ";")) {
-  points <- cbind(points, sapply(strsplit(point, ","), as.numeric))
+prepare <- function(points, duration) {
+  duration <- as.numeric(duration)
+  instants <- duration * points[1, ]
+  m <- matrix(c(
+    if (length(instants)) instants else rep(0, length(points[1, ])),
+    points[2, ]
+  ), nrow = 2, byrow = TRUE)
+  return(m)
 }
 
-points <- points[, 2:length(points[1, ])]
+tomatrix <- function(points_list) {
+  points <- c(NULL)
+  n <- length(points_list[[1]])
+  for (l in points_list) {
+    points <- c(points, sapply(l, `[`, 1))
+  }
+  m <- matrix(points, ncol = n, byrow = TRUE)
+  return(m)
+}
 
-print(paste(interpolate(points), collapse = ";"))
+middle <- function(obj) {
+  polynomials <- list()
+  paths <- list()
+  for (object in obj) {
+    for (attribute in object) {
+      if (is.null(attribute$duration) || attribute$duration == 0) {
+        next
+      }
+      attribute$points <- t(tomatrix(attribute$points))
+      if (attribute$attribute != "position") {
+        points <- prepare(attribute$points, attribute$duration)
+        polynomials <- append(
+          polynomials,
+          list(interpolate(attribute$attribute, points))
+        )
+        next
+      }
+
+      xpoints <- prepare(
+        rbind(attribute$points[1, ], attribute$points[2, ]),
+        attribute$duration
+      )
+      xresult <- interpolate("x", xpoints)
+      points <- append(
+        polynomials,
+        list(xresult)
+      )
+      xpolynomial <- xresult$polynomial
+
+      ypoints <- prepare(
+        rbind(attribute$points[1, ], attribute$points[3, ]),
+        attribute$duration
+      )
+      yresult <- interpolate("y", ypoints)
+
+      polynomials <- append(
+        polynomials,
+        list(yresult)
+      )
+      ypolynomial <- yresult$polynomial
+      paths <- append(
+        paths,
+        list(
+          list(
+            x = list(
+              coefficients = xpolynomial,
+              start = 0,
+              end = xpoints[1, length(xpoints[1, ])]
+            ),
+            y = list(
+              coefficients = ypolynomial,
+              start = 0,
+              end = ypoints[1, length(ypoints[1, ])]
+            )
+          )
+        )
+      )
+    }
+  }
+
+  if (length(paths) == 0 || length(paths) == 1) {
+    return(list(
+      polynomials = polynomials,
+      intersections = list()
+    ))
+  }
+
+  return(list(
+    polynomials = polynomials,
+    intersections = intersections(paths)
+  ))
+}

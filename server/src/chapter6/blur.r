@@ -39,17 +39,19 @@ kernels <- list(
   simple_simpson = kernel("simple_simpson", sigma)
 )
 
-blur <- function(image) {
-  new_image <- image_convolve(image, kernels$trapezoids)
-  image_write(new_image, "./trapezoids.jpg")
-
-  new_image <- image_convolve(image, kernels$simple_trapezoids)
-  image_write(new_image, "./simple_trapezoids.jpg")
-
-  new_image <- image_convolve(image, kernels$simpson)
-  image_write(new_image, "./simpson.jpg")
-
-  new_image <- image_convolve(image, kernels$simple_simpson)
-  image_write(new_image, "./simple_simpson.jpg")
+blur <- function(image, sigma) {
+  trapezoids <- image_convolve(image, kernels$trapezoids)
+  simple_trapezoids <- image_convolve(image, kernels$simple_trapezoids)
+  simpson <- image_convolve(image, kernels$simpson)
+  simple_simpson <- image_convolve(image, kernels$simple_simpson)
+  image_write(trapezoids, "./sample/trapezoids-tmp.jpg")
+  image_write(simple_trapezoids, "./sample/simple_trapezoids-tmp.jpg")
+  image_write(simpson, "./sample/simpson-tmp.jpg")
+  image_write(simple_simpson, "./sample/simple_simpson-tmp.jpg")
+  return(
+    # trapezoids = jpeg("./sample/trapezoids-tmp.jpg"),
+    # simple_trapezoids = jpeg("./sample/simple_trapezoids-tmp.jpg"),
+    # simpson = jpeg("./sample/simpson-tmp.jpg"),
+    readBin("./sample/simple_simpson-tmp.jpg", "raw")
+  )
 }
-
